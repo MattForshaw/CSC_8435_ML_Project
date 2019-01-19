@@ -86,18 +86,18 @@ datagen.fit(X_train)
 # Fit the model
 epochs = 50 
 batch_size = 10
-history = model.fit_generator(datagen.flow(x_train,y_train, batch_size=batch_size),
-                              epochs = epochs, validation_data = (x_validate,y_validate),
-                              verbose = 1, steps_per_epoch=x_train.shape[0] // batch_size
+history = model.fit_generator(datagen.flow(X_train,Y_train, batch_size=batch_size),
+                              epochs = epochs, validation_data = (X_validate,Y_validate),
+                              verbose = 1, steps_per_epoch=X_train.shape[0] // batch_size
                               , callbacks=[learning_rate_reduction])
 
 
 
 # Save model
-model.save(filepath)
+model.save(os.path.join(data_dir,"cnn.hdf5"))
 
-loss, accuracy = model.evaluate(x_test, y_test, verbose=1)
-loss_v, accuracy_v = model.evaluate(x_validate, y_validate, verbose=1)
+loss, accuracy = model.evaluate(X_test, Y_test, verbose=1)
+loss_v, accuracy_v = model.evaluate(X_validate, Y_validate, verbose=1)
 print("Validation: accuracy = %f  ;  loss_v = %f" % (accuracy_v, loss_v))
 print("Test: accuracy = %f  ;  loss = %f" % (accuracy, loss))
 model.save("model.h5")
@@ -135,15 +135,40 @@ def plot_confusion_matrix(cm, classes,
     plt.xlabel('Predicted label')
 
 # Predict the values from the validation dataset
-Y_pred = model.predict(x_validate)
+Y_pred = model.predict(X_validate)
 # Convert predictions classes to one hot vectors 
 Y_pred_classes = np.argmax(Y_pred,axis = 1) 
 # Convert validation observations to one hot vectors
-Y_true = np.argmax(y_validate,axis = 1) 
+Y_true = np.argmax(Y_validate,axis = 1) 
 # compute the confusion matrix
 confusion_mtx = confusion_matrix(Y_true, Y_pred_classes)
 
  
 
 # plot the confusion matrix
+plot_confusion_matrix(confusion_mtx, classes = range(7))
+
+
+label_frac_error = 1 - np.diag(confusion_mtx) / np.sum(confusion_mtx, axis=1)
+plt.bar(np.arange(7), label_frac_error)
+plt.xlabel('True Label')
+plt.ylabel('Fraction classified incorrectly')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 plot_confusion_matrix(confusion_mtx, classes = range(7)) 

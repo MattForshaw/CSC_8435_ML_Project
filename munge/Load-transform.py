@@ -27,12 +27,11 @@ import itertools
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
-from imread import imread, imsave
 from keras.utils.np_utils import to_categorical
 
 
 # Assign project template data directory
-data_dir = "/Users/MT/Desktop/DS_Projects/CSC8635_ML_Project/data"
+data_dir = "H:\Desktop\CSC_8435_ML_Project-master\data"
 # Import metadata df
 meta = pd.read_csv(os.path.join(data_dir,'HAM10000_metadata.csv'))
 # Convert diagnoses (ground truth) to factor
@@ -85,22 +84,15 @@ Y_train = to_categorical(Y_train_enc, num_classes = 7)
 Y_test = to_categorical(Y_test_enc, num_classes = 7)
 
 
-
-Y_train.shape
-
 X_train, X_validate, Y_train, Y_validate = train_test_split(X_train, Y_train, test_size = 0.1, random_state = 10) 
 
-# Reshape image in 3 dimensions (height = 75px, width = 100px , canal = 3)
-x_train = X_train.reshape(X_train.shape[0], *(75, 100, 3))
-x_test = x_test.reshape(x_test.shape[0], *(75, 100, 3))
-X_validate = X_validate.reshape(X_validate.shape[0], *(75, 100, 3))
+## Reshape image in 3 dimensions (height = 75px, width = 100px , canal = 3)
+#X_train = X_train.reshape(X_train.shape[0], *(75, 100, 3))
+#X_test =Xx_test.reshape(X_test.shape[0], *(75, 100, 3))
+#X_validate = X_validate.reshape(X_validate.shape[0], *(75, 100, 3))
 
 
-X_train.shape
-x_train.shape
 
-
-X_validate.shape
 
 
 
