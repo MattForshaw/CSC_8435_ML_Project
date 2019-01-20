@@ -8,6 +8,7 @@ Created on Fri Jan 18 19:30:22 2019
 
 %matplotlib inline
 import matplotlib
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import os
@@ -31,17 +32,15 @@ from keras.utils.np_utils import to_categorical
 
 
 # Assign project template data directory
-data_dir = "H:\Desktop\CSC_8435_ML_Project-master\data"
+data_dir = "Desktop/DS_Projects/CSC8635_ML_Project/data"
 # Import metadata df
 meta = pd.read_csv(os.path.join(data_dir,'HAM10000_metadata.csv'))
-# Convert diagnoses (ground truth) to factor
-meta['dx'] = meta['dx'].astype('category')
 
 # Iterate through data_dir looking for jpg files and append to images_ls
 images_ls = []
 for dir,_,_ in os.walk(data_dir):
     images_ls.extend(glob(os.path.join(dir,"*.jpg"))) 
-    
+  
 # Convert images_ls to dataframe and assign variable name
 images_df = pd.DataFrame(images_ls)
 images_df.columns = ['path']
@@ -51,62 +50,48 @@ images_df['image_id'] = images_df['path'].str[-16:-4]
 # Join image_df with meta on image id
 meta = pd.merge(meta, images_df, how='left', on=['image_id'])
 
-## Create new empty column for image 
-#meta['image'] = ""
-# Iterate through images df, downsampling to 100x75 pixels, converting to array and inserting into meta df
-#for i in range(0,len(images_df)-1):
-##    meta.image[i] = np.asarray(Image.open(meta.path[i]).resize((100,75)))
-#     meta.iloc[i,9] = np.asarray(Image.open(meta.iloc[i,7]).resize((100,75)))
+meta.colum
 
+# Iterate through images, resizing down to to 100x75 pixels, converting to array and inserting into new column
 meta['image'] = meta['path'].map(lambda x: np.asarray(Image.open(x).resize((100,75))))
-meta.to_csv(os.path.join(data_dir,"meta_asarray.csv"), sep='\t')
+meta.to_pickle(os.path.join(data_dir,"meta_cache.csv"))
+
+
+
+
+
+##### PART 2 (starting from post-munge)
+# Import cached metadata df
+meta = pd.read_pickle(os.path.join(data_dir,"meta_cache.csv"))
 
 # Extract predictor variable (images) and labels as seperate vectors
-X=meta['image']
-Y=meta['dx']
-
-# Iterate through images vector and normalise image array (divide by max RGB value = 255)
-X = np.asarray(meta['image'].tolist())
-X = X.astype('float32')
-X /= 255
-
-# Split test/train set for predictor and label variables
-X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.20,random_state=10)
-
-# Perform one-hot encoding on the labels
-
-# Integer encode each category
-label_encoder = LabelEncoder()
-Y_train_enc = label_encoder.fit_transform(Y_train)
-Y_test_enc = label_encoder.fit_transform(Y_test)
-# One-hot encode integers
-Y_train = to_categorical(Y_train_enc, num_classes = 7)
-Y_test = to_categorical(Y_test_enc, num_classes = 7)
-
-
-X_train, X_validate, Y_train, Y_validate = train_test_split(X_train, Y_train, test_size = 0.1, random_state = 10) 
-
-## Reshape image in 3 dimensions (height = 75px, width = 100px , canal = 3)
-#X_train = X_train.reshape(X_train.shape[0], *(75, 100, 3))
-#X_test =Xx_test.reshape(X_test.shape[0], *(75, 100, 3))
-#X_validate = X_validate.reshape(X_validate.shape[0], *(75, 100, 3))
-
-
-
-
-
-
-
-
-
-
+x=meta['image']
+y=meta['dx']
 
 # Verify array/image pipleline integrity by converting back to image
-plt.imshow(y)
+plt.imshow(x[0])
 
-# invert encoding
-inverted = argmax(encoded[0])
-print(inverted)
+# Perform one-hot encoding on the labels
+label_encoder = LabelEncoder()
+y_enc = label_encoder.fit_transform(y)
+y = to_categorical(y_enc, num_classes = 7)
+
+# Iterate through images vector, convert to float and centre (subtract all from mean image value)
+x = np.asarray(meta['image'].tolist())
+x = x.astype('float32')
+x -= np.mean(x, axis=0)
+
+# Split test/train set for predictor and label variables
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.20,random_state=10)
+
+# Split training set further for cross validation (NOT used for talos optimisation)
+x_train_m, x_val, y_train_m, y_val = train_test_split(x_train, y_train, test_size = 0.1, random_state = 10) 
+
+
+
+
+
+
 
 
 
