@@ -1,2 +1,5 @@
 *.csv
 *.jpg
+*.p
+*.hdf5
+*.RData

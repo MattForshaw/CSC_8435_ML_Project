@@ -100,7 +100,7 @@ para = {
     'activation': ['relu', 'elu'],
     'conv_dropout': [0.25, 0.4]
 }
-scan_results = ta.Scan(x_train, y_train, para, fashion_mnist_fn)
+scan_results = ta.Scan(x_tr, y_tr, para, fashion_mnist_fn)
 
 
 

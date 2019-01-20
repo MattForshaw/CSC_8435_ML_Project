@@ -6,7 +6,29 @@ Created on Fri Jan 18 23:14:53 2019
 @author: MT
 """
 
+%matplotlib inline
+import matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import os
+from glob import glob
+from PIL import Image
 
+from numpy import array
+from numpy import argmax
+from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import OneHotEncoder
+
+from sklearn import preprocessing
+from sklearn.preprocessing import label_binarize
+from sklearn.metrics import confusion_matrix
+import itertools
+
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+
+from keras.utils.np_utils import to_categorical
 
 
 import keras
@@ -23,8 +45,7 @@ from keras.preprocessing.image import ImageDataGenerator
 from keras.callbacks import ReduceLROnPlateau
 
 
-# Set random seed to ensure reproducability
-np.random.seed(10)      
+
 
 
 
@@ -82,6 +103,9 @@ datagen = ImageDataGenerator(
 
 datagen.fit(X_train)
 
+
+# Set random seed to ensure reproducability
+np.random.seed(10)      
 
 # Fit the model
 epochs = 50 
