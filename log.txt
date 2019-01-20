@@ -1,0 +1,47 @@
+commit 76e85a6df6d2306925ef972c46271bc781503de1
+Author: m-tyrrell <mtyrrell@ymail.com>
+Date:   Sun Jan 20 19:49:38 2019 +0000
+
+    trying to fix gitignore for new file types
+
+commit 7428569a6962ad8a0684002760ead5852deb3c27
+Author: m-tyrrell <mtyrrell@ymail.com>
+Date:   Sun Jan 20 09:36:44 2019 +0000
+
+    fixed caching of df using pickle, added talos parameter optimisation (grid/random search), cleaned up code
+
+commit ce23ad95ddabc6e742a2015343da81b66c90bf83
+Author: m-tyrrell <mtyrrell@ymail.com>
+Date:   Sat Jan 19 15:34:02 2019 +0000
+
+    unicode error fix....
+
+commit 44cc45d1d480b90dc743f82035510792546860cb
+Author: m-tyrrell <mtyrrell@ymail.com>
+Date:   Sat Jan 19 15:26:56 2019 +0000
+
+    updated scripts for azure
+
+commit 05f8ca604bf170d8f15566a925e45e9c65aee2ba
+Author: m-tyrrell <mtyrrell@ymail.com>
+Date:   Sat Jan 19 14:02:05 2019 +0000
+
+    completed preprocessing, setup model to run on azure
+
+commit 7da2cc08d92ea8404965f1199ca1f6e1f25e38ef
+Author: m-tyrrell <mtyrrell@ymail.com>
+Date:   Fri Jan 18 23:09:49 2019 +0000
+
+    finally figured out loading and transforming images
+
+commit 15df38080e0120f1b027cd847a42ffe2ee22448a
+Author: m-tyrrell <mtyrrell@ymail.com>
+Date:   Fri Jan 18 16:46:55 2019 +0000
+
+    keras model from kaggle
+
+commit 19582e4dbc9a03635a4fbad36792fb9229ff5870
+Author: m-tyrrell <mtyrrell@ymail.com>
+Date:   Thu Jan 17 10:27:23 2019 +0000
+
+    initial commit
