@@ -62,30 +62,33 @@ meta.to_pickle(os.path.join(data_dir,"meta_cache"))
 
 ##### PART 2 (starting from post-munge)
 # Import cached metadata df
-meta = pd.read_pickle(os.path.join(data_dir,"meta_cache"))
+meta = pd.read_pickle("/Users/MT/Desktop/DS_Projects/CSC8635_ML_Project/cache/meta_cache.p")
 
 # Extract predictor variable (images) and labels as seperate vectors
-x=meta['image']
-y=meta['dx']
+X=meta['image']
+Y=meta['dx']
 
-# Verify array/image pipleline integrity by converting back to image
-plt.imshow(x[0])
-
-# Perform one-hot encoding on the labels
-label_encoder = LabelEncoder()
-y_enc = label_encoder.fit_transform(y)
-y = to_categorical(y_enc, num_classes = 7)
-
-# Iterate through images vector, convert to float and centre (subtract all from mean image value)
-x = np.asarray(meta['image'].tolist())
-x = x.astype('float32')
-x -= np.mean(x, axis=0)
+# Iterate through images vector and normalise image array (divide by max RGB value = 255)
+X = np.asarray(meta['image'].tolist())
+X = X.astype('float32')
+X -= np.mean(X, axis=0)
+X /= np.std(X, axis=0)
 
 # Split test/train set for predictor and label variables
-x_tr, x_test, y_tr, y_test = train_test_split(x, y, test_size=0.20,random_state=10)
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.1,random_state=10)
 
-# Split training set further for cross validation (NOT used for talos optimisation)
-x_tr_m, x_val_m, y_tr_m, y_val_m = train_test_split(x_tr, y_tr, test_size = 0.1, random_state = 10) 
+# Perform one-hot encoding on the labels
+
+# Integer encode each category
+label_encoder = LabelEncoder()
+Y_train_enc = label_encoder.fit_transform(Y_train)
+Y_test_enc = label_encoder.fit_transform(Y_test)
+# One-hot encode integers
+Y_train = to_categorical(Y_train_enc, num_classes = 7)
+Y_test = to_categorical(Y_test_enc, num_classes = 7)
+
+
+X_train, X_validate, Y_train, Y_validate = train_test_split(X_train, Y_train, test_size = 0.1, random_state = 10) 
 
 
 
