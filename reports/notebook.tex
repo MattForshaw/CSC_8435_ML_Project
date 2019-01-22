@@ -1,0 +1,886 @@
+
+% Default to the notebook output style
+
+    
+
+
+% Inherit from the specified cell style.
+
+
+
+
+    
+\documentclass[11pt]{article}
+
+    
+    
+    \usepackage[T1]{fontenc}
+    % Nicer default font (+ math font) than Computer Modern for most use cases
+    \usepackage{mathpazo}
+
+    % Basic figure setup, for now with no caption control since it's done
+    % automatically by Pandoc (which extracts ![](path) syntax from Markdown).
+    \usepackage{graphicx}
+    % We will generate all images so they have a width \maxwidth. This means
+    % that they will get their normal width if they fit onto the page, but
+    % are scaled down if they would overflow the margins.
+    \makeatletter
+    \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth
+    \else\Gin@nat@width\fi}
+    \makeatother
+    \let\Oldincludegraphics\includegraphics
+    % Set max figure width to be 80% of text width, for now hardcoded.
+    \renewcommand{\includegraphics}[1]{\Oldincludegraphics[width=.8\maxwidth]{#1}}
+    % Ensure that by default, figures have no caption (until we provide a
+    % proper Figure object with a Caption API and a way to capture that
+    % in the conversion process - todo).
+    \usepackage{caption}
+    \DeclareCaptionLabelFormat{nolabel}{}
+    \captionsetup{labelformat=nolabel}
+
+    \usepackage{adjustbox} % Used to constrain images to a maximum size 
+    \usepackage{xcolor} % Allow colors to be defined
+    \usepackage{enumerate} % Needed for markdown enumerations to work
+    \usepackage{geometry} % Used to adjust the document margins
+    \usepackage{amsmath} % Equations
+    \usepackage{amssymb} % Equations
+    \usepackage{textcomp} % defines textquotesingle
+    % Hack from http://tex.stackexchange.com/a/47451/13684:
+    \AtBeginDocument{%
+        \def\PYZsq{\textquotesingle}% Upright quotes in Pygmentized code
+    }
+    \usepackage{upquote} % Upright quotes for verbatim code
+    \usepackage{eurosym} % defines \euro
+    \usepackage[mathletters]{ucs} % Extended unicode (utf-8) support
+    \usepackage[utf8x]{inputenc} % Allow utf-8 characters in the tex document
+    \usepackage{fancyvrb} % verbatim replacement that allows latex
+    \usepackage{grffile} % extends the file name processing of package graphics 
+                         % to support a larger range 
+    % The hyperref package gives us a pdf with properly built
+    % internal navigation ('pdf bookmarks' for the table of contents,
+    % internal cross-reference links, web links for URLs, etc.)
+    \usepackage{hyperref}
+    \usepackage{longtable} % longtable support required by pandoc >1.10
+    \usepackage{booktabs}  % table support for pandoc > 1.12.2
+    \usepackage[inline]{enumitem} % IRkernel/repr support (it uses the enumerate* environment)
+    \usepackage[normalem]{ulem} % ulem is needed to support strikethroughs (\sout)
+                                % normalem makes italics be italics, not underlines
+    
+
+    
+    
+    % Colors for the hyperref package
+    \definecolor{urlcolor}{rgb}{0,.145,.698}
+    \definecolor{linkcolor}{rgb}{.71,0.21,0.01}
+    \definecolor{citecolor}{rgb}{.12,.54,.11}
+
+    % ANSI colors
+    \definecolor{ansi-black}{HTML}{3E424D}
+    \definecolor{ansi-black-intense}{HTML}{282C36}
+    \definecolor{ansi-red}{HTML}{E75C58}
+    \definecolor{ansi-red-intense}{HTML}{B22B31}
+    \definecolor{ansi-green}{HTML}{00A250}
+    \definecolor{ansi-green-intense}{HTML}{007427}
+    \definecolor{ansi-yellow}{HTML}{DDB62B}
+    \definecolor{ansi-yellow-intense}{HTML}{B27D12}
+    \definecolor{ansi-blue}{HTML}{208FFB}
+    \definecolor{ansi-blue-intense}{HTML}{0065CA}
+    \definecolor{ansi-magenta}{HTML}{D160C4}
+    \definecolor{ansi-magenta-intense}{HTML}{A03196}
+    \definecolor{ansi-cyan}{HTML}{60C6C8}
+    \definecolor{ansi-cyan-intense}{HTML}{258F8F}
+    \definecolor{ansi-white}{HTML}{C5C1B4}
+    \definecolor{ansi-white-intense}{HTML}{A1A6B2}
+
+    % commands and environments needed by pandoc snippets
+    % extracted from the output of `pandoc -s`
+    \providecommand{\tightlist}{%
+      \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+    \DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+    % Add ',fontsize=\small' for more characters per line
+    \newenvironment{Shaded}{}{}
+    \newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{{#1}}}
+    \newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{{#1}}}}
+    \newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{{#1}}}
+    \newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{{#1}}}
+    \newcommand{\RegionMarkerTok}[1]{{#1}}
+    \newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\NormalTok}[1]{{#1}}
+    
+    % Additional commands for more recent versions of Pandoc
+    \newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{{#1}}}
+    \newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{{#1}}}
+    \newcommand{\ImportTok}[1]{{#1}}
+    \newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{{#1}}}}
+    \newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{{#1}}}
+    \newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{{#1}}}
+    \newcommand{\BuiltInTok}[1]{{#1}}
+    \newcommand{\ExtensionTok}[1]{{#1}}
+    \newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{{#1}}}
+    \newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{{#1}}}
+    \newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    
+    
+    % Define a nice break command that doesn't care if a line doesn't already
+    % exist.
+    \def\br{\hspace*{\fill} \\* }
+    % Math Jax compatability definitions
+    \def\gt{>}
+    \def\lt{<}
+    % Document parameters
+    \title{CSC8635\_ML\_Project\_Rep}
+    
+    
+    
+
+    % Pygments definitions
+    
+\makeatletter
+\def\PY@reset{\let\PY@it=\relax \let\PY@bf=\relax%
+    \let\PY@ul=\relax \let\PY@tc=\relax%
+    \let\PY@bc=\relax \let\PY@ff=\relax}
+\def\PY@tok#1{\csname PY@tok@#1\endcsname}
+\def\PY@toks#1+{\ifx\relax#1\empty\else%
+    \PY@tok{#1}\expandafter\PY@toks\fi}
+\def\PY@do#1{\PY@bc{\PY@tc{\PY@ul{%
+    \PY@it{\PY@bf{\PY@ff{#1}}}}}}}
+\def\PY#1#2{\PY@reset\PY@toks#1+\relax+\PY@do{#2}}
+
+\expandafter\def\csname PY@tok@w\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.73,0.73}{##1}}}
+\expandafter\def\csname PY@tok@c\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@cp\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.74,0.48,0.00}{##1}}}
+\expandafter\def\csname PY@tok@k\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@kp\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@kt\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.69,0.00,0.25}{##1}}}
+\expandafter\def\csname PY@tok@o\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@ow\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\expandafter\def\csname PY@tok@nb\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@nf\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@nc\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@nn\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@ne\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.82,0.25,0.23}{##1}}}
+\expandafter\def\csname PY@tok@nv\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@no\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.53,0.00,0.00}{##1}}}
+\expandafter\def\csname PY@tok@nl\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.63,0.63,0.00}{##1}}}
+\expandafter\def\csname PY@tok@ni\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.60,0.60,0.60}{##1}}}
+\expandafter\def\csname PY@tok@na\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.49,0.56,0.16}{##1}}}
+\expandafter\def\csname PY@tok@nt\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@nd\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\expandafter\def\csname PY@tok@s\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sd\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@si\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.53}{##1}}}
+\expandafter\def\csname PY@tok@se\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sr\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.53}{##1}}}
+\expandafter\def\csname PY@tok@ss\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@sx\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@m\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@gh\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\expandafter\def\csname PY@tok@gu\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.50,0.00,0.50}{##1}}}
+\expandafter\def\csname PY@tok@gd\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.63,0.00,0.00}{##1}}}
+\expandafter\def\csname PY@tok@gi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.63,0.00}{##1}}}
+\expandafter\def\csname PY@tok@gr\endcsname{\def\PY@tc##1{\textcolor[rgb]{1.00,0.00,0.00}{##1}}}
+\expandafter\def\csname PY@tok@ge\endcsname{\let\PY@it=\textit}
+\expandafter\def\csname PY@tok@gs\endcsname{\let\PY@bf=\textbf}
+\expandafter\def\csname PY@tok@gp\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\expandafter\def\csname PY@tok@go\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.53,0.53,0.53}{##1}}}
+\expandafter\def\csname PY@tok@gt\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.27,0.87}{##1}}}
+\expandafter\def\csname PY@tok@err\endcsname{\def\PY@bc##1{\setlength{\fboxsep}{0pt}\fcolorbox[rgb]{1.00,0.00,0.00}{1,1,1}{\strut ##1}}}
+\expandafter\def\csname PY@tok@kc\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@kd\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@kn\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@kr\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@bp\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@fm\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@vc\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@vg\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@vi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@vm\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@sa\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sb\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sc\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@dl\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@s2\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sh\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@s1\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@mb\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@mf\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@mh\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@mi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@il\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@mo\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@ch\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@cm\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@cpf\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@c1\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@cs\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+
+\def\PYZbs{\char`\\}
+\def\PYZus{\char`\_}
+\def\PYZob{\char`\{}
+\def\PYZcb{\char`\}}
+\def\PYZca{\char`\^}
+\def\PYZam{\char`\&}
+\def\PYZlt{\char`\<}
+\def\PYZgt{\char`\>}
+\def\PYZsh{\char`\#}
+\def\PYZpc{\char`\%}
+\def\PYZdl{\char`\$}
+\def\PYZhy{\char`\-}
+\def\PYZsq{\char`\'}
+\def\PYZdq{\char`\"}
+\def\PYZti{\char`\~}
+% for compatibility with earlier versions
+\def\PYZat{@}
+\def\PYZlb{[}
+\def\PYZrb{]}
+\makeatother
+
+
+    % Exact colors from NB
+    \definecolor{incolor}{rgb}{0.0, 0.0, 0.5}
+    \definecolor{outcolor}{rgb}{0.545, 0.0, 0.0}
+
+
+
+    
+    % Prevent overflowing lines due to hard-to-break entities
+    \sloppy 
+    % Setup hyperref package
+    \hypersetup{
+      breaklinks=true,  % so long urls are correctly broken across lines
+      colorlinks=true,
+      urlcolor=urlcolor,
+      linkcolor=linkcolor,
+      citecolor=citecolor,
+      }
+    % Slightly bigger margins than the latex defaults
+    
+    \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+    
+    
+
+    \begin{document}
+    
+    
+    \maketitle
+    
+    
+
+    
+    \hypertarget{deep-learning-for-medical-point-of-care-using-neural-networks-to-diagnose-skin-cancer}{%
+\section{Deep Learning for Medical Point-of-Care: Using Neural Networks
+to Diagnose Skin
+Cancer}\label{deep-learning-for-medical-point-of-care-using-neural-networks-to-diagnose-skin-cancer}}
+
+Author: ``Mark R. Tyrrell'' Module: CSC8635 Machine Learning
+
+\hypertarget{introduction}{%
+\subsection{Introduction}\label{introduction}}
+
+The increased accuracy and agility of machine learning in recent years
+has pushed usability of the technology to the frontiers of many fields.
+This phenomenon is readily apparent in the field of medicine, where deep
+learning algorithms are being used for medical imaging analyses (Shen et
+al.~2017). The coincident emphasis on point-of-care testing (POCT) -
+replicating lab capacities at the clinical level - in the policy
+frameworks of many national health services further drives demand for
+these technologies. Applications of deep learning for POTC can improve
+patient outcomes by providing frontline clinicians with the tools
+necessary to make expert diagnoses without the need for specialist
+referrals. This in turn can decrease treatment lead-time, allowing for
+quicker intervention and better prognoses.
+
+This study examines the viability of developing and deploying a deep
+learning algorithm for a POCT application using publicly available data
+and commercial off-the-shelf (COTS) computing equipment. A convolutional
+neural network (CNN) will be used to analyse images of skin lesions in
+order to diagnosis the presence of skin cancer. The results will be
+compared with human expert assessment.
+
+\hypertarget{background}{%
+\subsection{Background}\label{background}}
+
+The prevalence of melanoma has increased steadily per capita since 1975
+and continues to grow at 2.6 percent annually in the United States
+(Siegal et al.~2018; Higgens et al.~2014). Though low compared with
+other cancers, the mortality rate of melanoma is 8\% in the United
+States (Siegal et al.~2018). This statistic highlights the relatively
+high survivability of this type of cancer, owing primarily to its
+visibility. In most cases malignant melanoma are identified early, and
+are subsequently curable. Conversely, treatment for metastasized
+melanoma is limited, resulting in a 5-year survival rate for stage-four
+melanoma of less than 15 percent (Higgens et al.~2014), underscoring the
+importance of early and accurate diagnoses.
+
+Malformed, mixed-pigmented and growing skin lesions are often readily
+apparent to patients and to primary healthcare providers while
+conducting physicals. Manual inspection of skin lesions using the
+Asymmetry, Border irregularity, Color variegation, Diameter
+\textgreater{}6 mm (ABCD) method for identifying potential malignancies
+has been the norm since 1985 and provides a first layer of screening
+with varying degrees of efficacy (Abbasi et al.~2004). If a malignancy
+is suspected, patients are referred to a determatologist for further
+screening.
+
+More advanced clinical-level diagnosis techniques such as dermatoscopy
+provide increased accuracy. However, this technology still requires the
+expertise of highly-trained specialists (Ebell 2008). Clearly there is a
+need to provide primary healthcare workers with easily applied, powerful
+diagnostic tools in order to identify malignant skin lesions prior to
+metastatic progression of the cancer.
+
+Computer vision is a logical candidate technology for automated skin
+cancer diagnosis. Deep learning algorithms have advanced steadily over
+the past two decades. CNNs can now match humans in simple object
+detection, and are being applied to many facets of medical imaging (Shen
+et al.~2017). The development of algorithms to detect melanomas and
+other skin cancers has been facilated by the recent release of the
+HAM10000 dataset (Tschandl et al.~2018). At the same time, open source
+machine learning libraries, cloud computing and smartphone cameras have
+made the training and deployment of CNNs accessible. Combined, these
+technologies and resources can be used to produce a cheap and accurate
+tool for diagnosing malignant skin lesions. This paper will demonstrate
+the simple development and deployment of a prototype diagnostic tool as
+proof-of-concept.
+
+    \hypertarget{methodology}{%
+\subsection{Methodology}\label{methodology}}
+
+In keeping with the goal of producing an affordable tool for diagnosing
+skin cancer, this project made exclusive use of open source toolkits.
+All data processing was accomplished using Python. The development of
+the CNN used the Python Keras library exclusively. Keras is a wrapper
+API on the Tensorflow library, and allows quick deployment of deep
+learning models with a user friendly syntax.
+
+Training of the CNN was conducted using ad hoc cloud computing
+resources. Microsoft Azure provides an array of different services
+including virtual machines (VMs) exclusively designed for machine
+learning tasks. This project utitlised an Azure NC6 Deep Learning VM
+with 6 virtual CPUs, 56 GB memory and a dedicated NVIDIA GPU. The total
+online time for the VM including setup time, code debugging and
+parameter optimisation was approximately 20 hours. The cost for this
+cloud-based resource was less than £20, make it highly applicable for
+this project.
+
+\hypertarget{data-understanding}{%
+\paragraph{Data Understanding}\label{data-understanding}}
+
+The HAM10000 dataset primarily consists of 10015 medium resolution
+images of seven different types of skin lesions, comprising 95 percent
+of lesions encountered in standard clinical practice (Tschandl et
+al.~2018). The images are preprocessed to ensure a minimal standard of
+contrast, focus and magnification of the lesion. The ground truth for
+each image is contained in an accompanying csv file along with metadata
+including the age and sex of the subject, the location of the lesion on
+the body, and the diagnosis method.
+
+The patient descriptor variables included in the metadata file such as
+age and sex could be used to contribute to the model. Age in particular
+has a direct positive correlation with increased prevalence of melanoma
+(Siegal et al.~2018). These correlations are well known to health care
+professionals and form the basis of screening regimes. As this project
+focuses on the use of innovative uses of image analysis for diagnoses,
+the model will exclude the metadata variables and only utilise the skin
+lesion images for model building.
+
+Table displays the quantity of each type of skin lesion represented in
+the dataset. While the dataset in total contains a reasonable quantity
+of data for training, the data are highly imbalanced. Melanoma comprises
+the majority of the samples (67\%). This is problematic and can
+detrimentally affect classification performance (Buda et al.~2018). As
+the prior probability of any of the samples being Melanoma is very high
+at 67 percent, the model accuracy will be biased toward selecting
+Melanoma. Additionally, the size of the dataset in this case further
+compounds the problem. The remaining 3310 samples are divided amongst
+the minority categories. Some categories contain less than 200 samples.
+This is insufficient for training a reliable classifier.
+
+\textbf{Table 1: HAM10000 Image data quantity by ground truth category}
+
+\begin{longtable}[]{@{}lc@{}}
+\toprule
+Diagnostic Category & n\tabularnewline
+\midrule
+\endhead
+Actinic Keratoses & 327\tabularnewline
+Basal Cell Carcinoma & 514\tabularnewline
+Benign Keratosis & 1099\tabularnewline
+Dermatofibroma & 115\tabularnewline
+Melanocytic Nevi & 1113\tabularnewline
+Melanoma & 6705\tabularnewline
+Vascular & 142\tabularnewline
+\bottomrule
+\end{longtable}
+
+The imbalance in the dataset can be adjusted by dropping overrepresented
+samples, artificially increasing underrepresented samples, or a
+combination of both. Due to the relatively small size of the dataset,
+the only viable option in this case is oversampling the minority
+categories. The naive method for this involves creating duplicates of
+minority samples, ideally resulting in an even distribution of the
+categories. Further methods involve interpolation between samples of the
+same category to create new samples, for instance synthetic minority
+oversampling technique (SMOTE).
+
+Transfer learning provides yet another avenue for tackling the issues
+with the dataset. This is accomplished by using the convolutional and
+pooling layers of a CNN trained on another dataset, then adapting the
+fully connected layers to the target dataset and retraining. This
+technique is widely used and has proven to be effective in challenging
+contexts (Ramcharan et al.~2017). However, due to the excessive
+implementation requirements of these methods, both transfer learning and
+oversampling are beyond the scope of this study.
+
+Batch normalisation was tried on the first layer to mitigate the issues
+caused by imbalance. This method attempts to provide a normally
+distributed sample of the dataset to the input batch for each epoch. The
+algorithm can improve overall performance of CNNs as well as exhibit
+regularisation effects (Ioffe and Szegedy 2015). Surprisingly the model
+did not perform as well with batch normalisation enabled, and it was
+therefore removed from the final model.
+
+    \hypertarget{data-preparation}{%
+\paragraph{Data Preparation}\label{data-preparation}}
+
+The preparation of the data involves identifying the jpeg file paths
+from multiple folder locations, then merging the file paths vector with
+the metadata file. These file paths are then used to source the files,
+resizing and converting them to numpy arrays and inserting them into a
+new column in the metadata file.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}34}]:} \PY{c+c1}{\PYZsh{} Load standard data processing libraries}
+         \PY{o}{\PYZpc{}}\PY{k}{matplotlib} inline
+         \PY{k+kn}{import} \PY{n+nn}{matplotlib}
+         \PY{k+kn}{import} \PY{n+nn}{matplotlib}\PY{n+nn}{.}\PY{n+nn}{pyplot} \PY{k}{as} \PY{n+nn}{plt}
+         \PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k}{as} \PY{n+nn}{np}
+         \PY{k+kn}{import} \PY{n+nn}{pandas} \PY{k}{as} \PY{n+nn}{pd}
+         \PY{k+kn}{import} \PY{n+nn}{os}
+         \PY{k+kn}{from} \PY{n+nn}{glob} \PY{k}{import} \PY{n}{glob}
+         \PY{k+kn}{from} \PY{n+nn}{PIL} \PY{k}{import} \PY{n}{Image}
+         \PY{k+kn}{from} \PY{n+nn}{numpy} \PY{k}{import} \PY{n}{array}
+         \PY{k+kn}{from} \PY{n+nn}{numpy} \PY{k}{import} \PY{n}{argmax}
+         \PY{k+kn}{from} \PY{n+nn}{sklearn}\PY{n+nn}{.}\PY{n+nn}{preprocessing} \PY{k}{import} \PY{n}{LabelEncoder}
+         \PY{k+kn}{from} \PY{n+nn}{sklearn}\PY{n+nn}{.}\PY{n+nn}{preprocessing} \PY{k}{import} \PY{n}{OneHotEncoder}
+         \PY{k+kn}{from} \PY{n+nn}{sklearn}\PY{n+nn}{.}\PY{n+nn}{model\PYZus{}selection} \PY{k}{import} \PY{n}{train\PYZus{}test\PYZus{}split}
+         
+         \PY{c+c1}{\PYZsh{} Assign project template directory}
+         \PY{n}{data\PYZus{}dir} \PY{o}{=} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{/Users/MT/Desktop/DS\PYZus{}Projects/CSC8635\PYZus{}ML\PYZus{}Project}\PY{l+s+s2}{\PYZdq{}}
+         \PY{c+c1}{\PYZsh{} Import metadata df}
+         \PY{n}{meta} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{read\PYZus{}csv}\PY{p}{(}\PY{n}{os}\PY{o}{.}\PY{n}{path}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n}{data\PYZus{}dir}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{data/HAM10000\PYZus{}metadata.csv}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{)}
+         \PY{c+c1}{\PYZsh{} Iterate through data\PYZus{}dir looking for jpg files and append to images\PYZus{}ls}
+         \PY{n}{images\PYZus{}ls} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+         \PY{k}{for} \PY{n+nb}{dir}\PY{p}{,}\PY{n}{\PYZus{}}\PY{p}{,}\PY{n}{\PYZus{}} \PY{o+ow}{in} \PY{n}{os}\PY{o}{.}\PY{n}{walk}\PY{p}{(}\PY{n}{data\PYZus{}dir}\PY{p}{)}\PY{p}{:}
+             \PY{n}{images\PYZus{}ls}\PY{o}{.}\PY{n}{extend}\PY{p}{(}\PY{n}{glob}\PY{p}{(}\PY{n}{os}\PY{o}{.}\PY{n}{path}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n+nb}{dir}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{*.jpg}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{)}\PY{p}{)} 
+         
+         \PY{c+c1}{\PYZsh{} Convert images\PYZus{}ls to dataframe and assign variable name}
+         \PY{n}{images\PYZus{}df} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{images\PYZus{}ls}\PY{p}{)}
+         \PY{n}{images\PYZus{}df}\PY{o}{.}\PY{n}{columns} \PY{o}{=} \PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{path}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+         
+         \PY{c+c1}{\PYZsh{} Extract image id from path for join with meta df}
+         \PY{n}{images\PYZus{}df}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{image\PYZus{}id}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{images\PYZus{}df}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{path}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{str}\PY{p}{[}\PY{o}{\PYZhy{}}\PY{l+m+mi}{16}\PY{p}{:}\PY{o}{\PYZhy{}}\PY{l+m+mi}{4}\PY{p}{]}
+         
+         \PY{c+c1}{\PYZsh{} Join image\PYZus{}df with meta on image id}
+         \PY{n}{meta} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{merge}\PY{p}{(}\PY{n}{meta}\PY{p}{,} \PY{n}{images\PYZus{}df}\PY{p}{,} \PY{n}{how}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{left}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{on}\PY{o}{=}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{image\PYZus{}id}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+\end{Verbatim}
+
+
+    The image data is provided in 600x450 pixel jpeg files. As
+higher-resolution imaging requires exponentially higher processing
+capability, the images were first resized to 100x75, maintaining the
+original aspect ratio. The resize operation requires considerable
+processing time, and therefore the output dataframe is cached as a
+\emph{pickle} file to allow quick reloading.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}70}]:} \PY{c+c1}{\PYZsh{} Iterate through images, resizing down to to 100x75 pixels, converting to array and inserting into new column}
+         \PY{n}{meta}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{image}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{meta}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{path}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{map}\PY{p}{(}\PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{n}{np}\PY{o}{.}\PY{n}{asarray}\PY{p}{(}\PY{n}{Image}\PY{o}{.}\PY{n}{open}\PY{p}{(}\PY{n}{x}\PY{p}{)}\PY{o}{.}\PY{n}{resize}\PY{p}{(}\PY{p}{(}\PY{l+m+mi}{100}\PY{p}{,}\PY{l+m+mi}{75}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+         
+         \PY{c+c1}{\PYZsh{} Cache result}
+         \PY{n}{meta}\PY{o}{.}\PY{n}{to\PYZus{}pickle}\PY{p}{(}\PY{n}{os}\PY{o}{.}\PY{n}{path}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n}{data\PYZus{}dir}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{cache/meta\PYZus{}cache.p}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{)}
+         
+         \PY{c+c1}{\PYZsh{} Import cached metadata df (uncomment to implement)}
+         \PY{c+c1}{\PYZsh{} meta = pd.read\PYZus{}pickle(os.path.join(data\PYZus{}dir,\PYZsq{}cache/meta\PYZus{}cache.p\PYZsq{}))}
+\end{Verbatim}
+
+
+    Next the response and predictor variables are independently separated
+from the \textbf{meta} dataframe as vectors. The response vector
+\textbf{Y} contains the 7 skin lesion categories in string form. These
+categories are converted to integers, then into categories using
+\emph{one-hot encoding}.
+
+The \textbf{X} vector contains the arrays of resized images of skin
+lesions. The array values are converted to floats, then centered by
+subtracting the mean of the vector, and normalised by dividing by the
+standard deviation of the vector.
+
+The vectors are then split twice using the \textbf{sklearn}
+\emph{train-test-split} function. The first split separates allocates 10
+percent of the data for post-training evaluation. The second split
+allocates 10 percent of the data for training cross-validation. A random
+seed is set for each split
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}42}]:} \PY{c+c1}{\PYZsh{} Extract predictor variable (images) and labels as seperate vectors}
+         \PY{n}{X}\PY{o}{=}\PY{n}{meta}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{image}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+         \PY{n}{Y}\PY{o}{=}\PY{n}{meta}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{dx}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+         
+         \PY{c+c1}{\PYZsh{} Integer encode each response category and then one\PYZhy{}hot encode}
+         \PY{n}{label\PYZus{}encoder} \PY{o}{=} \PY{n}{LabelEncoder}\PY{p}{(}\PY{p}{)}
+         \PY{n}{Y} \PY{o}{=} \PY{n}{label\PYZus{}encoder}\PY{o}{.}\PY{n}{fit\PYZus{}transform}\PY{p}{(}\PY{n}{Y}\PY{p}{)}
+         \PY{n}{Y} \PY{o}{=} \PY{n}{to\PYZus{}categorical}\PY{p}{(}\PY{n}{Y}\PY{p}{,} \PY{n}{num\PYZus{}classes} \PY{o}{=} \PY{l+m+mi}{7}\PY{p}{)}
+         
+         \PY{c+c1}{\PYZsh{} Iterate through images vector and normalise image array (divide by max RGB value = 255)}
+         \PY{n}{X} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{asarray}\PY{p}{(}\PY{n}{meta}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{image}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{tolist}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+         \PY{n}{X} \PY{o}{=} \PY{n}{X}\PY{o}{.}\PY{n}{astype}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{float32}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{X} \PY{o}{\PYZhy{}}\PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{n}{X}\PY{p}{,} \PY{n}{axis}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{)}
+         \PY{n}{X} \PY{o}{/}\PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{std}\PY{p}{(}\PY{n}{X}\PY{p}{,} \PY{n}{axis}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{)}
+         
+         \PY{c+c1}{\PYZsh{} Split test/train set for predictor and label variables}
+         \PY{n}{X\PYZus{}train}\PY{p}{,} \PY{n}{X\PYZus{}test}\PY{p}{,} \PY{n}{Y\PYZus{}train}\PY{p}{,} \PY{n}{Y\PYZus{}test} \PY{o}{=} \PY{n}{train\PYZus{}test\PYZus{}split}\PY{p}{(}\PY{n}{X}\PY{p}{,} \PY{n}{Y}\PY{p}{,} \PY{n}{test\PYZus{}size}\PY{o}{=}\PY{l+m+mf}{0.1}\PY{p}{,}\PY{n}{random\PYZus{}state}\PY{o}{=}\PY{l+m+mi}{10}\PY{p}{)}
+         
+         \PY{c+c1}{\PYZsh{} Split training set further for cross validation (NOT used for talos optimisation)}
+         \PY{n}{X\PYZus{}train}\PY{p}{,} \PY{n}{X\PYZus{}validate}\PY{p}{,} \PY{n}{Y\PYZus{}train}\PY{p}{,} \PY{n}{Y\PYZus{}validate} \PY{o}{=} \PY{n}{train\PYZus{}test\PYZus{}split}\PY{p}{(}\PY{n}{X\PYZus{}train}\PY{p}{,} \PY{n}{Y\PYZus{}train}\PY{p}{,} \PY{n}{test\PYZus{}size} \PY{o}{=} \PY{l+m+mf}{0.1}\PY{p}{,} \PY{n}{random\PYZus{}state} \PY{o}{=} \PY{l+m+mi}{10}\PY{p}{)} 
+\end{Verbatim}
+
+
+    \hypertarget{data-modeling}{%
+\paragraph{Data Modeling}\label{data-modeling}}
+
+The CNN was constructed using the Keras API for Tensorflow. The Keras
+package is optimised for GPU operation, providing relatively quick
+training time when implemented on a GPU-enabled machine. Hyper-parameter
+optimisation was accomplished using the Talos library.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor} }]:} \PY{c+c1}{\PYZsh{} Import keras utilities}
+        \PY{k+kn}{import} \PY{n+nn}{keras}
+        \PY{k+kn}{from} \PY{n+nn}{keras}\PY{n+nn}{.}\PY{n+nn}{utils}\PY{n+nn}{.}\PY{n+nn}{np\PYZus{}utils} \PY{k}{import} \PY{n}{to\PYZus{}categorical}
+        \PY{k+kn}{from} \PY{n+nn}{keras}\PY{n+nn}{.}\PY{n+nn}{models} \PY{k}{import} \PY{n}{Sequential}
+        \PY{k+kn}{from} \PY{n+nn}{keras}\PY{n+nn}{.}\PY{n+nn}{layers} \PY{k}{import} \PY{n}{Dense}\PY{p}{,} \PY{n}{Dropout}\PY{p}{,} \PY{n}{Flatten}\PY{p}{,} \PY{n}{Conv2D}\PY{p}{,} \PY{n}{MaxPool2D}
+        \PY{k+kn}{from} \PY{n+nn}{keras} \PY{k}{import} \PY{n}{backend} \PY{k}{as} \PY{n}{K}
+        \PY{k+kn}{import} \PY{n+nn}{itertools}
+        \PY{k+kn}{from} \PY{n+nn}{keras}\PY{n+nn}{.}\PY{n+nn}{layers}\PY{n+nn}{.}\PY{n+nn}{normalization} \PY{k}{import} \PY{n}{BatchNormalization}
+        \PY{k+kn}{from} \PY{n+nn}{keras}\PY{n+nn}{.}\PY{n+nn}{utils}\PY{n+nn}{.}\PY{n+nn}{np\PYZus{}utils} \PY{k}{import} \PY{n}{to\PYZus{}categorical} 
+        \PY{k+kn}{from} \PY{n+nn}{keras}\PY{n+nn}{.}\PY{n+nn}{optimizers} \PY{k}{import} \PY{n}{Adam}
+        \PY{k+kn}{from} \PY{n+nn}{keras}\PY{n+nn}{.}\PY{n+nn}{preprocessing}\PY{n+nn}{.}\PY{n+nn}{image} \PY{k}{import} \PY{n}{ImageDataGenerator}
+        \PY{k+kn}{from} \PY{n+nn}{keras}\PY{n+nn}{.}\PY{n+nn}{callbacks} \PY{k}{import} \PY{n}{ReduceLROnPlateau}
+\end{Verbatim}
+
+
+    The final model consisted of 2 separate sets of 2 convolutional layers
+with 32 filter layers each. Each set was followed by a pooling layer and
+set for differing dropout levels for regularisation. The hyper-parameter
+optimisation process resulted in RELU selected as the activation
+function for these layers.
+
+The resulting model is shown below.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}51}]:} \PY{c+c1}{\PYZsh{} Set the CNN model }
+         \PY{c+c1}{\PYZsh{} my CNN architechture is In \PYZhy{}\PYZgt{} [[Conv2D\PYZhy{}\PYZgt{}relu]*2 \PYZhy{}\PYZgt{} MaxPool2D \PYZhy{}\PYZgt{} Dropout]*2 \PYZhy{}\PYZgt{} Flatten \PYZhy{}\PYZgt{} Dense \PYZhy{}\PYZgt{} Dropout \PYZhy{}\PYZgt{} Out}
+         \PY{n}{input\PYZus{}shape} \PY{o}{=} \PY{n}{X\PYZus{}train}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{:}\PY{p}{]}
+         \PY{n}{act} \PY{o}{=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{relu}\PY{l+s+s1}{\PYZsq{}}
+         
+         \PY{n}{model} \PY{o}{=} \PY{n}{Sequential}\PY{p}{(}\PY{p}{)}
+         \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{BatchNormalization}\PY{p}{(}\PY{n}{input\PYZus{}shape}\PY{o}{=}\PY{n}{input\PYZus{}shape}\PY{p}{)}\PY{p}{)}
+         \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{Conv2D}\PY{p}{(}\PY{l+m+mi}{32}\PY{p}{,} \PY{n}{kernel\PYZus{}size}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{3}\PY{p}{,} \PY{l+m+mi}{3}\PY{p}{)}\PY{p}{,}\PY{n}{activation}\PY{o}{=}\PY{n}{act}\PY{p}{,}\PY{n}{padding} \PY{o}{=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Same}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{input\PYZus{}shape}\PY{o}{=}\PY{n}{input\PYZus{}shape}\PY{p}{)}\PY{p}{)}
+         \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{Conv2D}\PY{p}{(}\PY{l+m+mi}{32}\PY{p}{,}\PY{n}{kernel\PYZus{}size}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{3}\PY{p}{,} \PY{l+m+mi}{3}\PY{p}{)}\PY{p}{,} \PY{n}{activation}\PY{o}{=}\PY{n}{act}\PY{p}{,}\PY{n}{padding} \PY{o}{=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Same}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{p}{)}\PY{p}{)}
+         \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{MaxPool2D}\PY{p}{(}\PY{n}{pool\PYZus{}size} \PY{o}{=} \PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+         \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{Dropout}\PY{p}{(}\PY{l+m+mf}{0.2}\PY{p}{)}\PY{p}{)}
+         
+         \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{Conv2D}\PY{p}{(}\PY{l+m+mi}{64}\PY{p}{,} \PY{p}{(}\PY{l+m+mi}{3}\PY{p}{,} \PY{l+m+mi}{3}\PY{p}{)}\PY{p}{,} \PY{n}{activation}\PY{o}{=}\PY{n}{act}\PY{p}{,}\PY{n}{padding} \PY{o}{=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Same}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{)}
+         \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{Conv2D}\PY{p}{(}\PY{l+m+mi}{64}\PY{p}{,} \PY{p}{(}\PY{l+m+mi}{3}\PY{p}{,} \PY{l+m+mi}{3}\PY{p}{)}\PY{p}{,} \PY{n}{activation}\PY{o}{=}\PY{n}{act}\PY{p}{,}\PY{n}{padding} \PY{o}{=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Same}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{)}
+         \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{MaxPool2D}\PY{p}{(}\PY{n}{pool\PYZus{}size}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+         \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{Dropout}\PY{p}{(}\PY{l+m+mf}{0.5}\PY{p}{)}\PY{p}{)}
+         
+         \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{Flatten}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+         \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{Dense}\PY{p}{(}\PY{l+m+mi}{128}\PY{p}{,} \PY{n}{activation}\PY{o}{=}\PY{n}{act}\PY{p}{)}\PY{p}{)}
+         \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{Dropout}\PY{p}{(}\PY{l+m+mf}{0.5}\PY{p}{)}\PY{p}{)}
+         \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{Dense}\PY{p}{(}\PY{l+m+mi}{7}\PY{p}{,} \PY{n}{activation}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{softmax}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{)}
+         \PY{n}{model}\PY{o}{.}\PY{n}{summary}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+Layer (type)                 Output Shape              Param \#   
+=================================================================
+batch\_normalization\_1 (Batch (None, 75, 100, 3)        12        
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+conv2d\_1 (Conv2D)            (None, 75, 100, 32)       896       
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+conv2d\_2 (Conv2D)            (None, 75, 100, 32)       9248      
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+max\_pooling2d\_1 (MaxPooling2 (None, 37, 50, 32)        0         
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+dropout\_1 (Dropout)          (None, 37, 50, 32)        0         
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+conv2d\_3 (Conv2D)            (None, 37, 50, 64)        18496     
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+conv2d\_4 (Conv2D)            (None, 37, 50, 64)        36928     
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+max\_pooling2d\_2 (MaxPooling2 (None, 18, 25, 64)        0         
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+dropout\_2 (Dropout)          (None, 18, 25, 64)        0         
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+flatten\_1 (Flatten)          (None, 28800)             0         
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+dense\_1 (Dense)              (None, 128)               3686528   
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+dropout\_3 (Dropout)          (None, 128)               0         
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+dense\_2 (Dense)              (None, 7)                 903       
+=================================================================
+Total params: 3,753,011
+Trainable params: 3,753,005
+Non-trainable params: 6
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+
+    \end{Verbatim}
+
+    The ADAM algorithm was selected for step optimisation, with an initial
+learning rate of 0.0001 and standard beta settings. Loss was evaluated
+using cross entropy. In addition to loss minimisation, Accuracy was used
+as the measure of model performance. ROC AUC has been shown to be a
+better measure in cases of imbalanced data, as it measures the ration of
+false postives to false negatives (Buda et al.~2018). However, there is
+no simple implementation in Keras.
+
+Automated learning rate reduction was also enabled using the Keras
+\emph{ReduceLROnPlateau} callback function. This allowed the model to
+make adjustments to the learning rate during training when minimal
+change occured in the loss function over successive epochs.
+
+Additionally Keras allows the ability to make up for smaller dataset
+sizes by augmenting the input dataset. For instance, this function can
+rotate, zoom, shift or flip images. This allows for greater model
+generalisation to new data.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor} }]:} \PY{c+c1}{\PYZsh{} Define the optimizer}
+        \PY{n}{optimizer} \PY{o}{=} \PY{n}{Adam}\PY{p}{(}\PY{n}{lr}\PY{o}{=}\PY{l+m+mf}{0.0001}\PY{p}{,} \PY{n}{beta\PYZus{}1}\PY{o}{=}\PY{l+m+mf}{0.9}\PY{p}{,} \PY{n}{beta\PYZus{}2}\PY{o}{=}\PY{l+m+mf}{0.999}\PY{p}{,} \PY{n}{epsilon}\PY{o}{=}\PY{k+kc}{None}\PY{p}{,} \PY{n}{decay}\PY{o}{=}\PY{l+m+mf}{0.0}\PY{p}{,} \PY{n}{amsgrad}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+        \PY{c+c1}{\PYZsh{} or 5 e\PYZhy{}4}
+        
+        \PY{c+c1}{\PYZsh{} Start with no LR decay. Then optimise in subsequent models}
+        \PY{c+c1}{\PYZsh{} Compile the model}
+        \PY{n}{model}\PY{o}{.}\PY{n}{compile}\PY{p}{(}\PY{n}{optimizer} \PY{o}{=} \PY{n}{optimizer} \PY{p}{,} \PY{n}{loss} \PY{o}{=} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{categorical\PYZus{}crossentropy}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{metrics}\PY{o}{=}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{accuracy}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{)}
+        
+        \PY{c+c1}{\PYZsh{} Set a learning rate annealer}
+        \PY{n}{learning\PYZus{}rate\PYZus{}reduction} \PY{o}{=} \PY{n}{ReduceLROnPlateau}\PY{p}{(}\PY{n}{monitor}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{val\PYZus{}acc}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} 
+                                                    \PY{n}{patience}\PY{o}{=}\PY{l+m+mi}{3}\PY{p}{,} 
+                                                    \PY{n}{verbose}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{,} 
+                                                    \PY{n}{factor}\PY{o}{=}\PY{l+m+mf}{0.5}\PY{p}{,} 
+                                                    \PY{n}{min\PYZus{}lr}\PY{o}{=}\PY{l+m+mf}{0.00001}\PY{p}{)}
+        
+        \PY{c+c1}{\PYZsh{} With data augmentation to prevent overfitting }
+        \PY{n}{datagen} \PY{o}{=} \PY{n}{ImageDataGenerator}\PY{p}{(}
+                \PY{n}{featurewise\PYZus{}center}\PY{o}{=}\PY{k+kc}{False}\PY{p}{,}  \PY{c+c1}{\PYZsh{} set input mean to 0 over the dataset}
+                \PY{n}{samplewise\PYZus{}center}\PY{o}{=}\PY{k+kc}{False}\PY{p}{,}  \PY{c+c1}{\PYZsh{} set each sample mean to 0}
+                \PY{n}{featurewise\PYZus{}std\PYZus{}normalization}\PY{o}{=}\PY{k+kc}{False}\PY{p}{,}  \PY{c+c1}{\PYZsh{} divide inputs by std of the dataset}
+                \PY{n}{samplewise\PYZus{}std\PYZus{}normalization}\PY{o}{=}\PY{k+kc}{False}\PY{p}{,}  \PY{c+c1}{\PYZsh{} divide each input by its std}
+                \PY{n}{zca\PYZus{}whitening}\PY{o}{=}\PY{k+kc}{False}\PY{p}{,}  \PY{c+c1}{\PYZsh{} apply ZCA whitening}
+                \PY{n}{rotation\PYZus{}range}\PY{o}{=}\PY{l+m+mi}{10}\PY{p}{,}  \PY{c+c1}{\PYZsh{} randomly rotate images in the range (degrees, 0 to 180)}
+                \PY{n}{zoom\PYZus{}range} \PY{o}{=} \PY{l+m+mf}{0.1}\PY{p}{,} \PY{c+c1}{\PYZsh{} Randomly zoom image }
+                \PY{n}{width\PYZus{}shift\PYZus{}range}\PY{o}{=}\PY{l+m+mf}{0.1}\PY{p}{,}  \PY{c+c1}{\PYZsh{} randomly shift images horizontally (fraction of total width)}
+                \PY{n}{height\PYZus{}shift\PYZus{}range}\PY{o}{=}\PY{l+m+mf}{0.1}\PY{p}{,}  \PY{c+c1}{\PYZsh{} randomly shift images vertically (fraction of total height)}
+                \PY{n}{horizontal\PYZus{}flip}\PY{o}{=}\PY{k+kc}{False}\PY{p}{,}  \PY{c+c1}{\PYZsh{} randomly flip images}
+                \PY{n}{vertical\PYZus{}flip}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}  \PY{c+c1}{\PYZsh{} randomly flip images}
+        
+        \PY{n}{datagen}\PY{o}{.}\PY{n}{fit}\PY{p}{(}\PY{n}{X\PYZus{}train}\PY{p}{)}
+\end{Verbatim}
+
+
+    Prior to model fitting, a random seed was set in order to ensure
+reproducibility.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor} }]:} \PY{c+c1}{\PYZsh{} Set random seed to ensure reproducability}
+        \PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{seed}\PY{p}{(}\PY{l+m+mi}{10}\PY{p}{)}      
+        
+        \PY{c+c1}{\PYZsh{} Fit the model}
+        \PY{n}{epochs} \PY{o}{=} \PY{l+m+mi}{100} 
+        \PY{n}{batch\PYZus{}size} \PY{o}{=} \PY{l+m+mi}{9}
+        \PY{n}{history} \PY{o}{=} \PY{n}{model}\PY{o}{.}\PY{n}{fit\PYZus{}generator}\PY{p}{(}\PY{n}{datagen}\PY{o}{.}\PY{n}{flow}\PY{p}{(}\PY{n}{X\PYZus{}train}\PY{p}{,}\PY{n}{Y\PYZus{}train}\PY{p}{,} \PY{n}{batch\PYZus{}size}\PY{o}{=}\PY{n}{batch\PYZus{}size}\PY{p}{)}\PY{p}{,}
+                                      \PY{n}{epochs} \PY{o}{=} \PY{n}{epochs}\PY{p}{,} \PY{n}{validation\PYZus{}data} \PY{o}{=} \PY{p}{(}\PY{n}{X\PYZus{}val}\PY{p}{,}\PY{n}{Y\PYZus{}val}\PY{p}{)}\PY{p}{,}
+                                      \PY{n}{verbose} \PY{o}{=} \PY{l+m+mi}{1}\PY{p}{,} \PY{n}{steps\PYZus{}per\PYZus{}epoch}\PY{o}{=}\PY{n}{X\PYZus{}train}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]} \PY{o}{/}\PY{o}{/} \PY{n}{batch\PYZus{}size}
+                                      \PY{p}{,} \PY{n}{callbacks}\PY{o}{=}\PY{p}{[}\PY{n}{learning\PYZus{}rate\PYZus{}reduction}\PY{p}{]}\PY{p}{)}
+\end{Verbatim}
+
+
+    Selection of the hyper-parameters involved the use of Talos. This
+function allows automated training of models using different
+combinations of hyper-parameters. Due to the many permutations resulting
+from feeding just a few hyper-parameter ranges and the associated
+training time for each model, this tool must be used with caution. In
+practice, the utility works well following initial rough manual
+selection of learning rate, epochs and batch sizes.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor} }]:} \PY{c+c1}{\PYZsh{} import talos}
+        \PY{k+kn}{import} \PY{n+nn}{talos} \PY{k}{as} \PY{n+nn}{ta}
+        
+        \PY{c+c1}{\PYZsh{} Define model inside function to be called by ta.Scan}
+        \PY{k}{def} \PY{n+nf}{rand\PYZus{}search}\PY{p}{(}\PY{n}{X\PYZus{}train}\PY{p}{,} \PY{n}{Y\PYZus{}train}\PY{p}{,} \PY{n}{X\PYZus{}val}\PY{p}{,} \PY{n}{Y\PYZus{}val}\PY{p}{,} \PY{n}{params}\PY{p}{)}\PY{p}{:}
+            \PY{n}{conv\PYZus{}dropout} \PY{o}{=} \PY{n+nb}{float}\PY{p}{(}\PY{n}{params}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{conv\PYZus{}dropout}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+            \PY{n}{dense1\PYZus{}neuron} \PY{o}{=} \PY{n+nb}{int}\PY{p}{(}\PY{n}{params}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{dense1\PYZus{}neuron}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+            
+            \PY{n}{model} \PY{o}{=} \PY{n}{Sequential}\PY{p}{(}\PY{p}{)}
+        \PY{c+c1}{\PYZsh{}    model.add(BatchNormalization(input\PYZus{}shape=X\PYZus{}train.shape[1:]))}
+            \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{Conv2D}\PY{p}{(}\PY{l+m+mi}{32}\PY{p}{,} \PY{p}{(}\PY{l+m+mi}{3}\PY{p}{,} \PY{l+m+mi}{3}\PY{p}{)}\PY{p}{,} \PY{n}{padding}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{same}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{activation}\PY{o}{=}\PY{n}{params}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{activation}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+            \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{MaxPool2D}\PY{p}{(}\PY{n}{pool\PYZus{}size} \PY{o}{=} \PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+            \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{Dropout}\PY{p}{(}\PY{n}{conv\PYZus{}dropout}\PY{p}{)}\PY{p}{)}
+        
+            \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{BatchNormalization}\PY{p}{(}\PY{n}{input\PYZus{}shape}\PY{o}{=}\PY{n}{X\PYZus{}train}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{:}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+            \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{Conv2D}\PY{p}{(}\PY{l+m+mi}{64}\PY{p}{,} \PY{p}{(}\PY{l+m+mi}{3}\PY{p}{,} \PY{l+m+mi}{3}\PY{p}{)}\PY{p}{,} \PY{n}{padding}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{same}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{activation}\PY{o}{=}\PY{n}{params}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{activation}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+            \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{MaxPool2D}\PY{p}{(}\PY{n}{pool\PYZus{}size} \PY{o}{=} \PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+            \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{Dropout}\PY{p}{(}\PY{n}{conv\PYZus{}dropout}\PY{p}{)}\PY{p}{)}
+        
+            \PY{c+c1}{\PYZsh{} Extra layers not used}
+        \PY{c+c1}{\PYZsh{}    model.add(BatchNormalization(input\PYZus{}shape=X\PYZus{}train.shape[1:]))}
+        \PY{c+c1}{\PYZsh{}    model.add(Conv2D(256, (5, 5), padding=\PYZsq{}same\PYZsq{}, activation=params[\PYZsq{}activation\PYZsq{}]))}
+        \PY{c+c1}{\PYZsh{}    model.add(MaxPool2D(pool\PYZus{}size = (2, 2)))}
+        \PY{c+c1}{\PYZsh{}    model.add(Dropout(conv\PYZus{}dropout))}
+        
+            \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{Flatten}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+            \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{Dense}\PY{p}{(}\PY{n}{dense1\PYZus{}neuron}\PY{p}{,} \PY{n}{activation}\PY{o}{=}\PY{n}{params}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{activation}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+            \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{Dropout}\PY{p}{(}\PY{l+m+mf}{0.5}\PY{p}{)}\PY{p}{)}
+            \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{Dense}\PY{p}{(}\PY{n}{num\PYZus{}classes}\PY{p}{,} \PY{n}{activation}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{softmax}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{)}
+            \PY{n}{model}\PY{o}{.}\PY{n}{summary}\PY{p}{(}\PY{p}{)}
+            
+            \PY{c+c1}{\PYZsh{} Compile model}
+            \PY{n}{model}\PY{o}{.}\PY{n}{compile}\PY{p}{(}
+                \PY{n}{optimizer}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{adam}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}
+                \PY{n}{loss}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{categorical\PYZus{}crossentropy}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}
+                \PY{n}{metrics}\PY{o}{=}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{accuracy}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+            \PY{p}{)}
+            
+            \PY{c+c1}{\PYZsh{} Fit model}
+            \PY{n}{out} \PY{o}{=} \PY{n}{model}\PY{o}{.}\PY{n}{fit}\PY{p}{(}
+                \PY{n}{x}\PY{p}{,} \PY{n}{y}\PY{p}{,} \PY{n}{epochs}\PY{o}{=}\PY{l+m+mi}{50}\PY{p}{,} 
+                \PY{n}{batch\PYZus{}size}\PY{o}{=}\PY{l+m+mi}{10}\PY{p}{,} 
+                \PY{n}{verbose}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{,}
+                \PY{n}{validation\PYZus{}data}\PY{o}{=}\PY{p}{[}\PY{n}{x\PYZus{}val}\PY{p}{,} \PY{n}{y\PYZus{}val}\PY{p}{]}\PY{p}{,}
+                \PY{n}{callbacks}\PY{o}{=}\PY{p}{[}\PY{n}{learning\PYZus{}rate\PYZus{}reduction}\PY{p}{]}
+            \PY{p}{)}
+            \PY{k}{return} \PY{n}{out}\PY{p}{,} \PY{n}{model}
+        
+        \PY{c+c1}{\PYZsh{} Set ranges for hyper\PYZhy{}parameter optimisation}
+        \PY{n}{para} \PY{o}{=} \PY{p}{\PYZob{}}
+            \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{dense1\PYZus{}neuron}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+m+mi}{128}\PY{p}{,} \PY{l+m+mi}{256}\PY{p}{]}\PY{p}{,}
+            \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{activation}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{relu}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{elu}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+            \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{conv\PYZus{}dropout}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+m+mf}{0.2}\PY{p}{,} \PY{l+m+mf}{0.4}\PY{p}{,} \PY{l+m+mf}{0.5}\PY{p}{]}
+        \PY{p}{\PYZcb{}}
+        
+        \PY{c+c1}{\PYZsh{} Start scan using input data (validation sets created automatically)}
+        \PY{n}{scan\PYZus{}results} \PY{o}{=} \PY{n}{ta}\PY{o}{.}\PY{n}{Scan}\PY{p}{(}\PY{n}{X\PYZus{}train}\PY{p}{,} \PY{n}{Y\PYZus{}train}\PY{p}{,} \PY{n}{para}\PY{p}{,} \PY{n}{rand\PYZus{}search}\PY{p}{)}
+\end{Verbatim}
+
+
+    \hypertarget{results}{%
+\subsection{Results}\label{results}}
+
+Following training of the model using The results show that even this
+simple implementation of a CNN can be an effect diagnostic tool for skin
+cancer.
+
+The model
+
+How successful has it been? Provide evidence, using appropriate
+evaluation methodologies, and comment on the strengths/weaknesses of
+your evidence in answering this question.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor} }]:} \PY{n}{loss}\PY{p}{,} \PY{n}{acc} \PY{o}{=} \PY{n}{model}\PY{o}{.}\PY{n}{evaluate}\PY{p}{(}\PY{n}{X\PYZus{}test}\PY{p}{,} \PY{n}{Y\PYZus{}test}\PY{p}{,} \PY{n}{verbose}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{)}
+        \PY{n}{loss\PYZus{}val}\PY{p}{,} \PY{n}{acc\PYZus{}val} \PY{o}{=} \PY{n}{model}\PY{o}{.}\PY{n}{evaluate}\PY{p}{(}\PY{n}{X\PYZus{}val}\PY{p}{,} \PY{n}{Y\PYZus{}val}\PY{p}{,} \PY{n}{verbose}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{)}
+        \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Validation: accuracy = }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{  ;  loss\PYZus{}v = }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{p}{(}\PY{n}{acc\PYZus{}val}\PY{p}{,} \PY{n}{loss\PYZus{}val}\PY{p}{)}\PY{p}{)}
+        \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Test: accuracy = }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{  ;  loss = }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{p}{(}\PY{n}{accuracy}\PY{p}{,} \PY{n}{loss}\PY{p}{)}\PY{p}{)}
+        
+        \PY{c+c1}{\PYZsh{} Save model}
+        \PY{n}{model}\PY{o}{.}\PY{n}{save}\PY{p}{(}\PY{n}{os}\PY{o}{.}\PY{n}{path}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n}{data\PYZus{}dir}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{cnn.hdf5}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+
+
+    \hypertarget{discussion}{%
+\subsection{Discussion}\label{discussion}}
+
+What are the future implications for work in this area? If appli- cable,
+which areas of extension work are now possible due to the foundational
+work you have performed in this project?
+
+    \hypertarget{conclusion}{%
+\subsection{Conclusion}\label{conclusion}}
+
+A brief reflection on your personal and professional learning in
+undertaking this project. Here you can comment on how you found the
+process, what you learned about the technologies and methodologies you
+used, which aspects you found most diffi- cult/straightforward, and any
+conclusions which will inform the way you undertake similar projects in
+the future.
+
+    \hypertarget{references}{%
+\subsection{References}\label{references}}
+
+Shen et al.~2017 @article\{doi:10.1146/annurev-bioeng-071516-044442,
+author = \{Shen, Dinggang and Wu, Guorong and Suk, Heung-Il\}, title =
+\{Deep Learning in Medical Image Analysis\}, journal = \{Annual Review
+of Biomedical Engineering\}, volume = \{19\}, number = \{1\}, pages =
+\{221-248\}, year = \{2017\}, doi =
+\{10.1146/annurev-bioeng-071516-044442\}, note =\{PMID: 28301734\},
+
+Higgens et al.~2014 Point of care cutaneous imaging technology in
+melanoma screening and mole mapping H. William Higgins II, Kachiu C.
+Lee, David J. Leffell F1000Prime Rep.~2014; 6: 34. Published online 2014
+May 6. doi: 10.12703/P6-34
+
+Siegal et al.~2018 Cancer statistics, 2018
+
+Abbasi et al.~2004 Early Diagnosis of Cutaneous Melanoma Revisiting the
+ABCD Criteria Naheed R. Abbasi, MPH, MD; Helen M. Shaw, PhD; Darrell S.
+Rigel, MD; et al
+
+Ebell 2008 Clinical Diagnosis of Melanoma MARK EBELL, MD, MS, University
+of Georgia, Athens, Georgia Am Fam Physician. 2008 Nov
+15;78(10):1205-1208.
+
+Tschandl et al.~2018 Data Descriptor: The HAM10000 dataset, a large
+collection of multi-source dermatoscopic images of common pigmented skin
+lesions Philipp Tschandl1, Cliff Rosendahl2 \& Harald Kittler1
+
+@misc\{chollet2015keras, title=\{Keras\}, author=\{Chollet, Fran\c{c}ois
+and others\}, year=\{2015\}, howpublished=\{\url{https://keras.io}\}, \}
+
+Buda et al.~2018 Mateusz Buda, Atsuto Maki, and Maciej A Mazurowski. A
+systematic study of the class imbalance problem in convolutional neural
+networks. Neural Networks, 106:249--259, 2018.
+
+Ramcharan et al.~2017 Amanda RamcharanKelsee BaranowskiKelsee
+BaranowskiPeter Charles McCloskeyPeter Charles McCloskeyShow all 6
+authorsDavid P. Hughes Using Transfer Learning for Image-Based Cassava
+Disease Detection June 2017Frontiers in Plant Science 8
+
+Ioffe and Szegedy 2015 Sergey Ioffe, Christian Szegedy Batch
+Normalization: Accelerating Deep Network Training by Reducing Internal
+Covariate Shift
+
+
+    % Add a bibliography block to the postdoc
+    
+    
+    
+    \end{document}
