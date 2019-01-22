@@ -56,7 +56,6 @@ model.add(Dropout(0.5))
 #model.add(MaxPool2D(pool_size=(2, 2)))
 #model.add(Dropout(0.4))
 
-
 model.add(Flatten())
 model.add(Dense(128, activation=act))
 model.add(Dropout(0.5))
@@ -64,7 +63,7 @@ model.add(Dense(7, activation='softmax'))
 model.summary()
 
 # Define the optimizer
-optimizer = Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
+optimizer = Adam(lr=0.0001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
 
 # Compile the model
 model.compile(optimizer = optimizer, loss = "categorical_crossentropy", metrics=["accuracy"])
@@ -101,22 +100,18 @@ history = model.fit_generator(datagen.flow(X_train,Y_train, batch_size=batch_siz
                               verbose = 1, steps_per_epoch=X_train.shape[0] // batch_size
                               , callbacks=[learning_rate_reduction])
 
-
-
-
 with open('/trainHistoryDict', 'wb') as file_pi:
         pickle.dump(history.history, file_pi)
-
 # Save model
-model.save(os.path.join(data_dir,"cnn_1822-06_77.8TEST_85TR.hdf5"))
+model.save(os.path.join(data_dir,"cnn_78TEST_22JAN.hdf5"))
+
+
 
 
 
 #Load saved model
 from keras.models import load_model
-model = load_model(os.path.join(data_dir,"cnn_78.1TEST_22JAN.hdf5"))
-
-
+model = load_model(os.path.join(data_dir,"cnn_78TEST_22JAN.hdf5"))
 
 
 loss, acc = model.evaluate(X_test, Y_test, verbose=1)
@@ -126,11 +121,8 @@ print("Test: accuracy = %f  ;  loss = %f" % (acc, loss))
 
 
 
-
-
-
-
-
+# Save model
+model.save(os.path.join(data_dir,"cnn_1822-05_78.1TEST_22JAN.hdf5"))
 
 
 
@@ -143,17 +135,16 @@ hist_df['loss'] = pd.DataFrame(history.history['loss'])
 hist_df['val_acc'] = pd.DataFrame(history.history['val_acc'])
 hist_df['val_loss'] = pd.DataFrame(history.history['val_loss'])
 hist_df['lr'] = pd.DataFrame(history.history['lr'])
-hist_df['epoch'] = epochs
+hist_df['epoch'] = range(150)
+
 # Cache history df
 hist_df.to_pickle(os.path.join(data_dir,"cache\hist_df_1822-05.p"))
 
 
-# Import cached metadata df
-hist_df = pd.read_pickle(os.path.join(data_dir,"cache\hist_df_1822-05.p"))
 # Make sliced copies of hist_df for plotting
 hist_df_acc = hist_df.drop({'loss','val_loss','lr'}, axis=1)
 hist_df_loss = hist_df.drop({'acc','val_acc','lr'}, axis=1)
-# Load ggplot
+
 from ggplot import *
 
 # Plot Training Accuracy
@@ -165,9 +156,6 @@ ggplot(pd.melt(hist_df_acc, id_vars=['epoch']), aes(x='epoch', y='value', color=
 ggplot(pd.melt(hist_df_loss, id_vars=['epoch']), aes(x='epoch', y='value', color='variable')) +\
     geom_line() +\
     xlab("Epoch") + ylab("Loss (%)") + ggtitle("Training Loss")
-
-
-
 
 
 # Function to plot confusion matrix    

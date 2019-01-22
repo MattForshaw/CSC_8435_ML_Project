@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Created on Mon Jan 21 17:37:20 2019
 
@@ -92,12 +93,6 @@ X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.10,random_
 
 # Split train/validation set for predictor and label variables (not for Talos)
 X_train, X_val, Y_train, Y_val = train_test_split(X_train, Y_train, test_size = 0.1, random_state = 10) 
-
-
-
-
-
-
 
 
 
