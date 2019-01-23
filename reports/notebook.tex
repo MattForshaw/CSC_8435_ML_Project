@@ -550,7 +550,7 @@ processing time, and therefore the output dataframe is cached as a
 
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}126}]:} \PY{c+c1}{\PYZsh{} save frequency of labels}
+{\color{incolor}In [{\color{incolor}126}]:} \PY{c+c1}{\PYZsh{} Save frequency of each class (used for ROC analysis)}
           \PY{n}{class\PYZus{}df} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{meta}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{dx}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{value\PYZus{}counts}\PY{p}{(}\PY{p}{)}\PY{p}{)}
           \PY{n}{class\PYZus{}df}\PY{o}{.}\PY{n}{columns} \PY{o}{=} \PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{n}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
           \PY{n}{class\PYZus{}df}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{dx}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{nv}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mel}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{bkl}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{bcc}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{akiec}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{vasc}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{df}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
@@ -963,12 +963,16 @@ the validation set.
 
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}132}]:} \PY{k+kn}{from} \PY{n+nn}{ggplot} \PY{k}{import} \PY{o}{*}
+{\color{incolor}In [{\color{incolor}153}]:} \PY{c+c1}{\PYZsh{} Import ggplot (note \PYZhy{} need to manually edit pandas lib import import call in ggplot folder for loading to work in py3.6)}
+          \PY{k+kn}{from} \PY{n+nn}{ggplot} \PY{k}{import} \PY{o}{*}
           
           \PY{c+c1}{\PYZsh{} Plot Training Accuracy}
-          \PY{n}{ggplot}\PY{p}{(}\PY{n}{pd}\PY{o}{.}\PY{n}{melt}\PY{p}{(}\PY{n}{hist\PYZus{}df\PYZus{}acc}\PY{p}{,} \PY{n}{id\PYZus{}vars}\PY{o}{=}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{epoch}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}\PY{p}{,} \PY{n}{aes}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{epoch}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{value}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{variable}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{)} \PY{o}{+}\PYZbs{}
+          \PY{n}{p1} \PY{o}{=} \PY{n}{ggplot}\PY{p}{(}\PY{n}{pd}\PY{o}{.}\PY{n}{melt}\PY{p}{(}\PY{n}{hist\PYZus{}df\PYZus{}acc}\PY{p}{,} \PY{n}{id\PYZus{}vars}\PY{o}{=}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{epoch}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}\PY{p}{,} \PY{n}{aes}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{epoch}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{value}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{variable}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{)} \PY{o}{+}\PYZbs{}
               \PY{n}{geom\PYZus{}line}\PY{p}{(}\PY{p}{)} \PY{o}{+}\PYZbs{}
               \PY{n}{xlab}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Epoch}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)} \PY{o}{+} \PY{n}{ylab}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Accuracy (}\PY{l+s+s2}{\PYZpc{}}\PY{l+s+s2}{)}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)} \PY{o}{+} \PY{n}{ggtitle}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Training Accuracy}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+          
+          \PY{c+c1}{\PYZsh{} Save plot}
+          \PY{n}{ggplot}\PY{o}{.}\PY{n}{save}\PY{p}{(}\PY{n}{p1}\PY{p}{,} \PY{n}{filename}\PY{o}{=}\PY{n}{os}\PY{o}{.}\PY{n}{path}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n}{project\PYZus{}dir}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{graphs}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Acc\PYZus{}}\PY{l+s+s1}{\PYZsq{}}\PY{o}{+}\PY{n}{test\PYZus{}n}\PY{o}{+}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{.pdf}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{)}
 \end{Verbatim}
 
 
@@ -977,15 +981,14 @@ the validation set.
     \end{center}
     { \hspace*{\fill} \\}
     
-\begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}132}]:} <ggplot: (-9223372029801662990)>
-\end{Verbatim}
-            
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}133}]:} \PY{c+c1}{\PYZsh{} Plot Training Loss}
-          \PY{n}{ggplot}\PY{p}{(}\PY{n}{pd}\PY{o}{.}\PY{n}{melt}\PY{p}{(}\PY{n}{hist\PYZus{}df\PYZus{}loss}\PY{p}{,} \PY{n}{id\PYZus{}vars}\PY{o}{=}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{epoch}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}\PY{p}{,} \PY{n}{aes}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{epoch}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{value}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{variable}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{)} \PY{o}{+}\PYZbs{}
+{\color{incolor}In [{\color{incolor}154}]:} \PY{c+c1}{\PYZsh{} Plot Training Loss}
+          \PY{n}{p2} \PY{o}{=} \PY{n}{ggplot}\PY{p}{(}\PY{n}{pd}\PY{o}{.}\PY{n}{melt}\PY{p}{(}\PY{n}{hist\PYZus{}df\PYZus{}loss}\PY{p}{,} \PY{n}{id\PYZus{}vars}\PY{o}{=}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{epoch}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}\PY{p}{,} \PY{n}{aes}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{epoch}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{value}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{variable}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{)} \PY{o}{+}\PYZbs{}
               \PY{n}{geom\PYZus{}line}\PY{p}{(}\PY{p}{)} \PY{o}{+}\PYZbs{}
               \PY{n}{xlab}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Epoch}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)} \PY{o}{+} \PY{n}{ylab}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Loss (}\PY{l+s+s2}{\PYZpc{}}\PY{l+s+s2}{)}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)} \PY{o}{+} \PY{n}{ggtitle}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Training Loss}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+          
+          \PY{c+c1}{\PYZsh{} Save plot}
+          \PY{n}{ggplot}\PY{o}{.}\PY{n}{save}\PY{p}{(}\PY{n}{p2}\PY{p}{,} \PY{n}{filename}\PY{o}{=}\PY{n}{os}\PY{o}{.}\PY{n}{path}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n}{project\PYZus{}dir}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{graphs}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Loss\PYZus{}}\PY{l+s+s1}{\PYZsq{}}\PY{o}{+}\PY{n}{test\PYZus{}n}\PY{o}{+}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{.pdf}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{)}
 \end{Verbatim}
 
 
@@ -994,10 +997,6 @@ the validation set.
     \end{center}
     { \hspace*{\fill} \\}
     
-\begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}133}]:} <ggplot: (7052070699)>
-\end{Verbatim}
-            
     As previously discussed (ref. Data Understanding), due to the imbalance
 in the dataset, overall accuracy is not the best metric for assessing
 model performance. In such cases, the area under the receiver operator
@@ -1024,9 +1023,10 @@ performance metric for these classes. Overall, the ROC plot indicates
 good classification performance with an average of 0.92.
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}53}]:} \PY{n}{y\PYZus{}score} \PY{o}{=} \PY{n}{model}\PY{o}{.}\PY{n}{predict}\PY{p}{(}\PY{n}{X\PYZus{}test}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}53}]:} \PY{c+c1}{\PYZsh{} Compute y\PYZus{}score (uncomment to use for new analyses)}
+         \PY{c+c1}{\PYZsh{}y\PYZus{}score = model.predict(X\PYZus{}test)}
          
-         \PY{c+c1}{\PYZsh{} Cache y\PYZus{}score (uncomment to use)}
+         \PY{c+c1}{\PYZsh{} Cache y\PYZus{}score (uncomment to use for new analyses)}
          \PY{c+c1}{\PYZsh{}np.save(os.path.join(project\PYZus{}dir,\PYZdq{}cache\PYZdq{},\PYZdq{}y\PYZus{}score\PYZus{}\PYZdq{}+test\PYZus{}n+\PYZdq{}.npy\PYZdq{}), y\PYZus{}score)}
 \end{Verbatim}
 
@@ -1038,7 +1038,7 @@ good classification performance with an average of 0.92.
 
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}144}]:} \PY{c+c1}{\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{} ROC AUC Plot}
+{\color{incolor}In [{\color{incolor}155}]:} \PY{c+c1}{\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{} ROC AUC Plot}
           \PY{c+c1}{\PYZsh{} Source: https://www.dlology.com/blog/simple\PYZhy{}guide\PYZhy{}on\PYZhy{}how\PYZhy{}to\PYZhy{}generate\PYZhy{}roc\PYZhy{}plot\PYZhy{}for\PYZhy{}keras\PYZhy{}classifier/}
           
           \PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k}{as} \PY{n+nn}{np}
@@ -1107,7 +1107,7 @@ good classification performance with an average of 0.92.
           \PY{n}{plt}\PY{o}{.}\PY{n}{title}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Multi\PYZhy{}Classifier ROC AUC (One vs. All)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
           \PY{n}{plt}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{n}{loc}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{lower right}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
           \PY{c+c1}{\PYZsh{}plt.show()}
-          \PY{n}{savefig}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{ROC\PYZus{}}\PY{l+s+s1}{\PYZsq{}}\PY{o}{+}\PY{n}{test\PYZus{}n}\PY{o}{+}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{.pdf}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+          \PY{n}{savefig}\PY{p}{(}\PY{n}{os}\PY{o}{.}\PY{n}{path}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n}{project\PYZus{}dir}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{graphs}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{ROC\PYZus{}}\PY{l+s+s1}{\PYZsq{}}\PY{o}{+}\PY{n}{test\PYZus{}n}\PY{o}{+}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{.pdf}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{)}
 \end{Verbatim}
 
 
