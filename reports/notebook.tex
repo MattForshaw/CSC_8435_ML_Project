@@ -287,8 +287,8 @@ Cancer}\label{deep-learning-for-medical-point-of-care-using-neural-networks-to-d
 
 Author: ``Mark R. Tyrrell'' Module: CSC8635 Machine Learning
 
-\hypertarget{introduction}{%
-\subsection{Introduction}\label{introduction}}
+    \hypertarget{introduction}{%
+\section{Introduction}\label{introduction}}
 
 The increased accuracy and agility of machine learning in recent years
 has pushed usability of the technology to the frontiers of many fields.
@@ -311,7 +311,7 @@ order to diagnosis the presence of skin cancer. The results will be
 compared with human expert assessment.
 
 \hypertarget{background}{%
-\subsection{Background}\label{background}}
+\section{Background}\label{background}}
 
 The prevalence of melanoma has increased steadily per capita since 1975
 and continues to grow at 2.6 percent annually in the United States
@@ -357,7 +357,7 @@ the simple development and deployment of a prototype diagnostic tool as
 proof-of-concept.
 
     \hypertarget{methodology}{%
-\subsection{Methodology}\label{methodology}}
+\section{Methodology}\label{methodology}}
 
 In keeping with the goal of producing an affordable tool for diagnosing
 skin cancer, this project made exclusive use of open source toolkits.
@@ -376,8 +376,19 @@ parameter optimisation was approximately 20 hours. The cost for this
 cloud-based resource was less than £20, make it highly applicable for
 this project.
 
+Reproducibility of the model has been ensured by setting random seeds
+for stochastic processes, as well as providing all source code in this
+paper. Additionally, an archived folder is available containing the
+original ipython notebook file, supplemental scripts in .py format, and
+saved keras models. The folder is structured for standard data mining
+projects, including subfolders for data, cache, munge and source files.
+As the model building flow involves operations which require extended
+processing time, key output objects have been cached. The objects are
+called along the progression of the script, while the original code is
+also included in comments.
+
 \hypertarget{data-understanding}{%
-\paragraph{Data Understanding}\label{data-understanding}}
+\subsection{Data Understanding}\label{data-understanding}}
 
 The HAM10000 dataset primarily consists of 10015 medium resolution
 images of seven different types of skin lesions, comprising 95 percent
@@ -404,10 +415,13 @@ the majority of the samples (67\%). This is problematic and can
 detrimentally affect classification performance (Buda et al.~2018). As
 the prior probability of any of the samples being Melanoma is very high
 at 67 percent, the model accuracy will be biased toward selecting
-Melanoma. Additionally, the size of the dataset in this case further
-compounds the problem. The remaining 3310 samples are divided amongst
-the minority categories. Some categories contain less than 200 samples.
-This is insufficient for training a reliable classifier.
+Melanoma. The effect is clearly evidenced by observing the training
+process. The accuracy performance of the first epoch is no less than 66
+percent in most trials. Additionally, the size of the dataset in this
+case further compounds the problem. The remaining 3310 samples are
+divided amongst the minority categories. Some categories contain less
+than 200 samples. This is insufficient for training a reliable
+classifier.
 
 \textbf{Table 1: HAM10000 Image data quantity by ground truth category}
 
@@ -434,27 +448,30 @@ categories. The naive method for this involves creating duplicates of
 minority samples, ideally resulting in an even distribution of the
 categories. Further methods involve interpolation between samples of the
 same category to create new samples, for instance synthetic minority
-oversampling technique (SMOTE).
+oversampling technique (SMOTE). However, due to the excessive
+implementation requirements of these methods, both oversampling is
+beyond the scope of this study.
 
 Transfer learning provides yet another avenue for tackling the issues
 with the dataset. This is accomplished by using the convolutional and
 pooling layers of a CNN trained on another dataset, then adapting the
 fully connected layers to the target dataset and retraining. This
 technique is widely used and has proven to be effective in challenging
-contexts (Ramcharan et al.~2017). However, due to the excessive
-implementation requirements of these methods, both transfer learning and
-oversampling are beyond the scope of this study.
+contexts (Ramcharan et al.~2017). The Keras implementation of Transfer
+learning was used with the InceptionV3 ImageNet pre-trained CNN during
+model development.
 
-Batch normalisation was tried on the first layer to mitigate the issues
-caused by imbalance. This method attempts to provide a normally
-distributed sample of the dataset to the input batch for each epoch. The
-algorithm can improve overall performance of CNNs as well as exhibit
-regularisation effects (Ioffe and Szegedy 2015). Surprisingly the model
-did not perform as well with batch normalisation enabled, and it was
-therefore removed from the final model.
+Batch normalisation was utilised on the first layer to mitigate the
+issues caused by imbalance during model development. This method
+attempts to provide a normally distributed sample of the dataset to the
+input batch for each epoch. The algorithm can improve overall
+performance of CNNs as well as exhibit regularisation effects (Ioffe and
+Szegedy 2015). Surprisingly the model did not perform as well with batch
+normalisation enabled, and it was therefore removed from the final
+model.
 
     \hypertarget{data-preparation}{%
-\paragraph{Data Preparation}\label{data-preparation}}
+\subsection{Data Preparation}\label{data-preparation}}
 
 The preparation of the data involves identifying the jpeg file paths
 from multiple folder locations, then merging the file paths vector with
@@ -463,41 +480,51 @@ resizing and converting them to numpy arrays and inserting them into a
 new column in the metadata file.
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}34}]:} \PY{c+c1}{\PYZsh{} Load standard data processing libraries}
-         \PY{o}{\PYZpc{}}\PY{k}{matplotlib} inline
-         \PY{k+kn}{import} \PY{n+nn}{matplotlib}
-         \PY{k+kn}{import} \PY{n+nn}{matplotlib}\PY{n+nn}{.}\PY{n+nn}{pyplot} \PY{k}{as} \PY{n+nn}{plt}
-         \PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k}{as} \PY{n+nn}{np}
-         \PY{k+kn}{import} \PY{n+nn}{pandas} \PY{k}{as} \PY{n+nn}{pd}
-         \PY{k+kn}{import} \PY{n+nn}{os}
-         \PY{k+kn}{from} \PY{n+nn}{glob} \PY{k}{import} \PY{n}{glob}
-         \PY{k+kn}{from} \PY{n+nn}{PIL} \PY{k}{import} \PY{n}{Image}
-         \PY{k+kn}{from} \PY{n+nn}{numpy} \PY{k}{import} \PY{n}{array}
-         \PY{k+kn}{from} \PY{n+nn}{numpy} \PY{k}{import} \PY{n}{argmax}
-         \PY{k+kn}{from} \PY{n+nn}{sklearn}\PY{n+nn}{.}\PY{n+nn}{preprocessing} \PY{k}{import} \PY{n}{LabelEncoder}
-         \PY{k+kn}{from} \PY{n+nn}{sklearn}\PY{n+nn}{.}\PY{n+nn}{preprocessing} \PY{k}{import} \PY{n}{OneHotEncoder}
-         \PY{k+kn}{from} \PY{n+nn}{sklearn}\PY{n+nn}{.}\PY{n+nn}{model\PYZus{}selection} \PY{k}{import} \PY{n}{train\PYZus{}test\PYZus{}split}
-         
-         \PY{c+c1}{\PYZsh{} Assign project template directory}
-         \PY{n}{data\PYZus{}dir} \PY{o}{=} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{/Users/MT/Desktop/DS\PYZus{}Projects/CSC8635\PYZus{}ML\PYZus{}Project}\PY{l+s+s2}{\PYZdq{}}
-         \PY{c+c1}{\PYZsh{} Import metadata df}
-         \PY{n}{meta} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{read\PYZus{}csv}\PY{p}{(}\PY{n}{os}\PY{o}{.}\PY{n}{path}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n}{data\PYZus{}dir}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{data/HAM10000\PYZus{}metadata.csv}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{)}
-         \PY{c+c1}{\PYZsh{} Iterate through data\PYZus{}dir looking for jpg files and append to images\PYZus{}ls}
-         \PY{n}{images\PYZus{}ls} \PY{o}{=} \PY{p}{[}\PY{p}{]}
-         \PY{k}{for} \PY{n+nb}{dir}\PY{p}{,}\PY{n}{\PYZus{}}\PY{p}{,}\PY{n}{\PYZus{}} \PY{o+ow}{in} \PY{n}{os}\PY{o}{.}\PY{n}{walk}\PY{p}{(}\PY{n}{data\PYZus{}dir}\PY{p}{)}\PY{p}{:}
-             \PY{n}{images\PYZus{}ls}\PY{o}{.}\PY{n}{extend}\PY{p}{(}\PY{n}{glob}\PY{p}{(}\PY{n}{os}\PY{o}{.}\PY{n}{path}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n+nb}{dir}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{*.jpg}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{)}\PY{p}{)} 
-         
-         \PY{c+c1}{\PYZsh{} Convert images\PYZus{}ls to dataframe and assign variable name}
-         \PY{n}{images\PYZus{}df} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{images\PYZus{}ls}\PY{p}{)}
-         \PY{n}{images\PYZus{}df}\PY{o}{.}\PY{n}{columns} \PY{o}{=} \PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{path}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
-         
-         \PY{c+c1}{\PYZsh{} Extract image id from path for join with meta df}
-         \PY{n}{images\PYZus{}df}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{image\PYZus{}id}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{images\PYZus{}df}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{path}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{str}\PY{p}{[}\PY{o}{\PYZhy{}}\PY{l+m+mi}{16}\PY{p}{:}\PY{o}{\PYZhy{}}\PY{l+m+mi}{4}\PY{p}{]}
-         
-         \PY{c+c1}{\PYZsh{} Join image\PYZus{}df with meta on image id}
-         \PY{n}{meta} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{merge}\PY{p}{(}\PY{n}{meta}\PY{p}{,} \PY{n}{images\PYZus{}df}\PY{p}{,} \PY{n}{how}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{left}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{on}\PY{o}{=}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{image\PYZus{}id}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}1}]:} \PY{c+c1}{\PYZsh{} Assign project template directory}
+        \PY{n}{project\PYZus{}dir} \PY{o}{=} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{/Users/MT/Desktop/DS\PYZus{}Projects/CSC8635\PYZus{}ML\PYZus{}Project}\PY{l+s+s2}{\PYZdq{}}
 \end{Verbatim}
 
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}2}]:} \PY{c+c1}{\PYZsh{} Load standard data processing libraries}
+        \PY{o}{\PYZpc{}}\PY{k}{matplotlib} inline
+        \PY{k+kn}{import} \PY{n+nn}{matplotlib}
+        \PY{k+kn}{import} \PY{n+nn}{matplotlib}\PY{n+nn}{.}\PY{n+nn}{pyplot} \PY{k}{as} \PY{n+nn}{plt}
+        \PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k}{as} \PY{n+nn}{np}
+        \PY{k+kn}{import} \PY{n+nn}{pandas} \PY{k}{as} \PY{n+nn}{pd}
+        \PY{k+kn}{import} \PY{n+nn}{os}
+        \PY{k+kn}{from} \PY{n+nn}{glob} \PY{k}{import} \PY{n}{glob}
+        \PY{k+kn}{from} \PY{n+nn}{PIL} \PY{k}{import} \PY{n}{Image}
+        \PY{k+kn}{from} \PY{n+nn}{numpy} \PY{k}{import} \PY{n}{array}
+        \PY{k+kn}{from} \PY{n+nn}{numpy} \PY{k}{import} \PY{n}{argmax}
+        \PY{k+kn}{from} \PY{n+nn}{sklearn}\PY{n+nn}{.}\PY{n+nn}{preprocessing} \PY{k}{import} \PY{n}{LabelEncoder}
+        \PY{k+kn}{from} \PY{n+nn}{sklearn}\PY{n+nn}{.}\PY{n+nn}{preprocessing} \PY{k}{import} \PY{n}{OneHotEncoder}
+        \PY{k+kn}{from} \PY{n+nn}{sklearn}\PY{n+nn}{.}\PY{n+nn}{model\PYZus{}selection} \PY{k}{import} \PY{n}{train\PYZus{}test\PYZus{}split}
+        \PY{k+kn}{from} \PY{n+nn}{keras}\PY{n+nn}{.}\PY{n+nn}{utils}\PY{n+nn}{.}\PY{n+nn}{np\PYZus{}utils} \PY{k}{import} \PY{n}{to\PYZus{}categorical}
+        
+        \PY{c+c1}{\PYZsh{} Import metadata df}
+        \PY{n}{meta} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{read\PYZus{}csv}\PY{p}{(}\PY{n}{os}\PY{o}{.}\PY{n}{path}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n}{project\PYZus{}dir}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{data}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{HAM10000\PYZus{}metadata.csv}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{)}
+        \PY{c+c1}{\PYZsh{} Iterate through data\PYZus{}dir looking for jpg files and append to images\PYZus{}ls}
+        \PY{n}{images\PYZus{}ls} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+        \PY{k}{for} \PY{n+nb}{dir}\PY{p}{,}\PY{n}{\PYZus{}}\PY{p}{,}\PY{n}{\PYZus{}} \PY{o+ow}{in} \PY{n}{os}\PY{o}{.}\PY{n}{walk}\PY{p}{(}\PY{n}{project\PYZus{}dir}\PY{p}{)}\PY{p}{:}
+            \PY{n}{images\PYZus{}ls}\PY{o}{.}\PY{n}{extend}\PY{p}{(}\PY{n}{glob}\PY{p}{(}\PY{n}{os}\PY{o}{.}\PY{n}{path}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n+nb}{dir}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{*.jpg}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{)}\PY{p}{)} 
+        
+        \PY{c+c1}{\PYZsh{} Convert images\PYZus{}ls to dataframe and assign variable name}
+        \PY{n}{images\PYZus{}df} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{images\PYZus{}ls}\PY{p}{)}
+        \PY{n}{images\PYZus{}df}\PY{o}{.}\PY{n}{columns} \PY{o}{=} \PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{path}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+        
+        \PY{c+c1}{\PYZsh{} Extract image id from path for join with meta df}
+        \PY{n}{images\PYZus{}df}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{image\PYZus{}id}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{images\PYZus{}df}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{path}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{str}\PY{p}{[}\PY{o}{\PYZhy{}}\PY{l+m+mi}{16}\PY{p}{:}\PY{o}{\PYZhy{}}\PY{l+m+mi}{4}\PY{p}{]}
+        
+        \PY{c+c1}{\PYZsh{} Join image\PYZus{}df with meta on image id}
+        \PY{n}{meta} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{merge}\PY{p}{(}\PY{n}{meta}\PY{p}{,} \PY{n}{images\PYZus{}df}\PY{p}{,} \PY{n}{how}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{left}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{on}\PY{o}{=}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{image\PYZus{}id}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Using TensorFlow backend.
+
+    \end{Verbatim}
 
     The image data is provided in 600x450 pixel jpeg files. As
 higher-resolution imaging requires exponentially higher processing
@@ -507,14 +534,14 @@ processing time, and therefore the output dataframe is cached as a
 \emph{pickle} file to allow quick reloading.
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}70}]:} \PY{c+c1}{\PYZsh{} Iterate through images, resizing down to to 100x75 pixels, converting to array and inserting into new column}
-         \PY{n}{meta}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{image}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{meta}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{path}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{map}\PY{p}{(}\PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{n}{np}\PY{o}{.}\PY{n}{asarray}\PY{p}{(}\PY{n}{Image}\PY{o}{.}\PY{n}{open}\PY{p}{(}\PY{n}{x}\PY{p}{)}\PY{o}{.}\PY{n}{resize}\PY{p}{(}\PY{p}{(}\PY{l+m+mi}{100}\PY{p}{,}\PY{l+m+mi}{75}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{p}{)}
-         
-         \PY{c+c1}{\PYZsh{} Cache result}
-         \PY{n}{meta}\PY{o}{.}\PY{n}{to\PYZus{}pickle}\PY{p}{(}\PY{n}{os}\PY{o}{.}\PY{n}{path}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n}{data\PYZus{}dir}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{cache/meta\PYZus{}cache.p}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{)}
-         
-         \PY{c+c1}{\PYZsh{} Import cached metadata df (uncomment to implement)}
-         \PY{c+c1}{\PYZsh{} meta = pd.read\PYZus{}pickle(os.path.join(data\PYZus{}dir,\PYZsq{}cache/meta\PYZus{}cache.p\PYZsq{}))}
+{\color{incolor}In [{\color{incolor}3}]:} \PY{c+c1}{\PYZsh{} Iterate through images, resizing down to to 100x75 pixels, converting to array and inserting into new column}
+        \PY{c+c1}{\PYZsh{}meta[\PYZsq{}image\PYZsq{}] = meta[\PYZsq{}path\PYZsq{}].map(lambda x: np.asarray(Image.open(x).resize((100,75))))}
+        
+        \PY{c+c1}{\PYZsh{} Cache result}
+        \PY{c+c1}{\PYZsh{}meta.to\PYZus{}pickle(os.path.join(project\PYZus{}dir,\PYZdq{}cache/meta\PYZus{}cache.p\PYZdq{}))}
+        
+        \PY{c+c1}{\PYZsh{} Import cached metadata df (uncomment to implement)}
+        \PY{n}{meta} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{read\PYZus{}pickle}\PY{p}{(}\PY{n}{os}\PY{o}{.}\PY{n}{path}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n}{project\PYZus{}dir}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{cache}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{meta\PYZus{}cache.p}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{)}
 \end{Verbatim}
 
 
@@ -536,31 +563,31 @@ allocates 10 percent of the data for training cross-validation. A random
 seed is set for each split
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}42}]:} \PY{c+c1}{\PYZsh{} Extract predictor variable (images) and labels as seperate vectors}
-         \PY{n}{X}\PY{o}{=}\PY{n}{meta}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{image}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
-         \PY{n}{Y}\PY{o}{=}\PY{n}{meta}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{dx}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
-         
-         \PY{c+c1}{\PYZsh{} Integer encode each response category and then one\PYZhy{}hot encode}
-         \PY{n}{label\PYZus{}encoder} \PY{o}{=} \PY{n}{LabelEncoder}\PY{p}{(}\PY{p}{)}
-         \PY{n}{Y} \PY{o}{=} \PY{n}{label\PYZus{}encoder}\PY{o}{.}\PY{n}{fit\PYZus{}transform}\PY{p}{(}\PY{n}{Y}\PY{p}{)}
-         \PY{n}{Y} \PY{o}{=} \PY{n}{to\PYZus{}categorical}\PY{p}{(}\PY{n}{Y}\PY{p}{,} \PY{n}{num\PYZus{}classes} \PY{o}{=} \PY{l+m+mi}{7}\PY{p}{)}
-         
-         \PY{c+c1}{\PYZsh{} Iterate through images vector and normalise image array (divide by max RGB value = 255)}
-         \PY{n}{X} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{asarray}\PY{p}{(}\PY{n}{meta}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{image}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{tolist}\PY{p}{(}\PY{p}{)}\PY{p}{)}
-         \PY{n}{X} \PY{o}{=} \PY{n}{X}\PY{o}{.}\PY{n}{astype}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{float32}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-         \PY{n}{X} \PY{o}{\PYZhy{}}\PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{n}{X}\PY{p}{,} \PY{n}{axis}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{)}
-         \PY{n}{X} \PY{o}{/}\PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{std}\PY{p}{(}\PY{n}{X}\PY{p}{,} \PY{n}{axis}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{)}
-         
-         \PY{c+c1}{\PYZsh{} Split test/train set for predictor and label variables}
-         \PY{n}{X\PYZus{}train}\PY{p}{,} \PY{n}{X\PYZus{}test}\PY{p}{,} \PY{n}{Y\PYZus{}train}\PY{p}{,} \PY{n}{Y\PYZus{}test} \PY{o}{=} \PY{n}{train\PYZus{}test\PYZus{}split}\PY{p}{(}\PY{n}{X}\PY{p}{,} \PY{n}{Y}\PY{p}{,} \PY{n}{test\PYZus{}size}\PY{o}{=}\PY{l+m+mf}{0.1}\PY{p}{,}\PY{n}{random\PYZus{}state}\PY{o}{=}\PY{l+m+mi}{10}\PY{p}{)}
-         
-         \PY{c+c1}{\PYZsh{} Split training set further for cross validation (NOT used for talos optimisation)}
-         \PY{n}{X\PYZus{}train}\PY{p}{,} \PY{n}{X\PYZus{}validate}\PY{p}{,} \PY{n}{Y\PYZus{}train}\PY{p}{,} \PY{n}{Y\PYZus{}validate} \PY{o}{=} \PY{n}{train\PYZus{}test\PYZus{}split}\PY{p}{(}\PY{n}{X\PYZus{}train}\PY{p}{,} \PY{n}{Y\PYZus{}train}\PY{p}{,} \PY{n}{test\PYZus{}size} \PY{o}{=} \PY{l+m+mf}{0.1}\PY{p}{,} \PY{n}{random\PYZus{}state} \PY{o}{=} \PY{l+m+mi}{10}\PY{p}{)} 
+{\color{incolor}In [{\color{incolor}4}]:} \PY{c+c1}{\PYZsh{} Extract predictor variable (images) and labels as seperate vectors}
+        \PY{n}{X}\PY{o}{=}\PY{n}{meta}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{image}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+        \PY{n}{Y}\PY{o}{=}\PY{n}{meta}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{dx}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+        
+        \PY{c+c1}{\PYZsh{} Integer encode each response category and then one\PYZhy{}hot encode}
+        \PY{n}{label\PYZus{}encoder} \PY{o}{=} \PY{n}{LabelEncoder}\PY{p}{(}\PY{p}{)}
+        \PY{n}{Y} \PY{o}{=} \PY{n}{label\PYZus{}encoder}\PY{o}{.}\PY{n}{fit\PYZus{}transform}\PY{p}{(}\PY{n}{Y}\PY{p}{)}
+        \PY{n}{Y} \PY{o}{=} \PY{n}{to\PYZus{}categorical}\PY{p}{(}\PY{n}{Y}\PY{p}{,} \PY{n}{num\PYZus{}classes} \PY{o}{=} \PY{l+m+mi}{7}\PY{p}{)}
+        
+        \PY{c+c1}{\PYZsh{} Iterate through images vector and normalise image array (divide by max RGB value = 255)}
+        \PY{n}{X} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{asarray}\PY{p}{(}\PY{n}{meta}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{image}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{tolist}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+        \PY{n}{X} \PY{o}{=} \PY{n}{X}\PY{o}{.}\PY{n}{astype}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{float32}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+        \PY{n}{X} \PY{o}{\PYZhy{}}\PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{n}{X}\PY{p}{,} \PY{n}{axis}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{)}
+        \PY{n}{X} \PY{o}{/}\PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{std}\PY{p}{(}\PY{n}{X}\PY{p}{,} \PY{n}{axis}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{)}
+        
+        \PY{c+c1}{\PYZsh{} Split test/train set for predictor and label variables}
+        \PY{n}{X\PYZus{}train}\PY{p}{,} \PY{n}{X\PYZus{}test}\PY{p}{,} \PY{n}{Y\PYZus{}train}\PY{p}{,} \PY{n}{Y\PYZus{}test} \PY{o}{=} \PY{n}{train\PYZus{}test\PYZus{}split}\PY{p}{(}\PY{n}{X}\PY{p}{,} \PY{n}{Y}\PY{p}{,} \PY{n}{test\PYZus{}size}\PY{o}{=}\PY{l+m+mf}{0.1}\PY{p}{,}\PY{n}{random\PYZus{}state}\PY{o}{=}\PY{l+m+mi}{10}\PY{p}{)}
+        
+        \PY{c+c1}{\PYZsh{} Split training set further for cross validation (NOT used for talos optimisation)}
+        \PY{n}{X\PYZus{}train}\PY{p}{,} \PY{n}{X\PYZus{}val}\PY{p}{,} \PY{n}{Y\PYZus{}train}\PY{p}{,} \PY{n}{Y\PYZus{}val} \PY{o}{=} \PY{n}{train\PYZus{}test\PYZus{}split}\PY{p}{(}\PY{n}{X\PYZus{}train}\PY{p}{,} \PY{n}{Y\PYZus{}train}\PY{p}{,} \PY{n}{test\PYZus{}size} \PY{o}{=} \PY{l+m+mf}{0.1}\PY{p}{,} \PY{n}{random\PYZus{}state} \PY{o}{=} \PY{l+m+mi}{10}\PY{p}{)} 
 \end{Verbatim}
 
 
     \hypertarget{data-modeling}{%
-\paragraph{Data Modeling}\label{data-modeling}}
+\subsection{Data Modeling}\label{data-modeling}}
 
 The CNN was constructed using the Keras API for Tensorflow. The Keras
 package is optimised for GPU operation, providing relatively quick
@@ -568,7 +595,7 @@ training time when implemented on a GPU-enabled machine. Hyper-parameter
 optimisation was accomplished using the Talos library.
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor} }]:} \PY{c+c1}{\PYZsh{} Import keras utilities}
+{\color{incolor}In [{\color{incolor}5}]:} \PY{c+c1}{\PYZsh{} Import keras utilities}
         \PY{k+kn}{import} \PY{n+nn}{keras}
         \PY{k+kn}{from} \PY{n+nn}{keras}\PY{n+nn}{.}\PY{n+nn}{utils}\PY{n+nn}{.}\PY{n+nn}{np\PYZus{}utils} \PY{k}{import} \PY{n}{to\PYZus{}categorical}
         \PY{k+kn}{from} \PY{n+nn}{keras}\PY{n+nn}{.}\PY{n+nn}{models} \PY{k}{import} \PY{n}{Sequential}
@@ -592,28 +619,30 @@ function for these layers.
 The resulting model is shown below.
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}51}]:} \PY{c+c1}{\PYZsh{} Set the CNN model }
-         \PY{c+c1}{\PYZsh{} my CNN architechture is In \PYZhy{}\PYZgt{} [[Conv2D\PYZhy{}\PYZgt{}relu]*2 \PYZhy{}\PYZgt{} MaxPool2D \PYZhy{}\PYZgt{} Dropout]*2 \PYZhy{}\PYZgt{} Flatten \PYZhy{}\PYZgt{} Dense \PYZhy{}\PYZgt{} Dropout \PYZhy{}\PYZgt{} Out}
-         \PY{n}{input\PYZus{}shape} \PY{o}{=} \PY{n}{X\PYZus{}train}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{:}\PY{p}{]}
-         \PY{n}{act} \PY{o}{=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{relu}\PY{l+s+s1}{\PYZsq{}}
-         
-         \PY{n}{model} \PY{o}{=} \PY{n}{Sequential}\PY{p}{(}\PY{p}{)}
-         \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{BatchNormalization}\PY{p}{(}\PY{n}{input\PYZus{}shape}\PY{o}{=}\PY{n}{input\PYZus{}shape}\PY{p}{)}\PY{p}{)}
-         \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{Conv2D}\PY{p}{(}\PY{l+m+mi}{32}\PY{p}{,} \PY{n}{kernel\PYZus{}size}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{3}\PY{p}{,} \PY{l+m+mi}{3}\PY{p}{)}\PY{p}{,}\PY{n}{activation}\PY{o}{=}\PY{n}{act}\PY{p}{,}\PY{n}{padding} \PY{o}{=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Same}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{input\PYZus{}shape}\PY{o}{=}\PY{n}{input\PYZus{}shape}\PY{p}{)}\PY{p}{)}
-         \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{Conv2D}\PY{p}{(}\PY{l+m+mi}{32}\PY{p}{,}\PY{n}{kernel\PYZus{}size}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{3}\PY{p}{,} \PY{l+m+mi}{3}\PY{p}{)}\PY{p}{,} \PY{n}{activation}\PY{o}{=}\PY{n}{act}\PY{p}{,}\PY{n}{padding} \PY{o}{=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Same}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{p}{)}\PY{p}{)}
-         \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{MaxPool2D}\PY{p}{(}\PY{n}{pool\PYZus{}size} \PY{o}{=} \PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{)}\PY{p}{)}\PY{p}{)}
-         \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{Dropout}\PY{p}{(}\PY{l+m+mf}{0.2}\PY{p}{)}\PY{p}{)}
-         
-         \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{Conv2D}\PY{p}{(}\PY{l+m+mi}{64}\PY{p}{,} \PY{p}{(}\PY{l+m+mi}{3}\PY{p}{,} \PY{l+m+mi}{3}\PY{p}{)}\PY{p}{,} \PY{n}{activation}\PY{o}{=}\PY{n}{act}\PY{p}{,}\PY{n}{padding} \PY{o}{=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Same}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{)}
-         \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{Conv2D}\PY{p}{(}\PY{l+m+mi}{64}\PY{p}{,} \PY{p}{(}\PY{l+m+mi}{3}\PY{p}{,} \PY{l+m+mi}{3}\PY{p}{)}\PY{p}{,} \PY{n}{activation}\PY{o}{=}\PY{n}{act}\PY{p}{,}\PY{n}{padding} \PY{o}{=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Same}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{)}
-         \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{MaxPool2D}\PY{p}{(}\PY{n}{pool\PYZus{}size}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{)}\PY{p}{)}\PY{p}{)}
-         \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{Dropout}\PY{p}{(}\PY{l+m+mf}{0.5}\PY{p}{)}\PY{p}{)}
-         
-         \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{Flatten}\PY{p}{(}\PY{p}{)}\PY{p}{)}
-         \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{Dense}\PY{p}{(}\PY{l+m+mi}{128}\PY{p}{,} \PY{n}{activation}\PY{o}{=}\PY{n}{act}\PY{p}{)}\PY{p}{)}
-         \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{Dropout}\PY{p}{(}\PY{l+m+mf}{0.5}\PY{p}{)}\PY{p}{)}
-         \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{Dense}\PY{p}{(}\PY{l+m+mi}{7}\PY{p}{,} \PY{n}{activation}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{softmax}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{)}
-         \PY{n}{model}\PY{o}{.}\PY{n}{summary}\PY{p}{(}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}6}]:} \PY{c+c1}{\PYZsh{} Set the CNN model }
+        \PY{c+c1}{\PYZsh{} my CNN architechture is In \PYZhy{}\PYZgt{} [[Conv2D\PYZhy{}\PYZgt{}relu]*2 \PYZhy{}\PYZgt{} MaxPool2D \PYZhy{}\PYZgt{} Dropout]*2 \PYZhy{}\PYZgt{} Flatten \PYZhy{}\PYZgt{} Dense \PYZhy{}\PYZgt{} Dropout \PYZhy{}\PYZgt{} Out}
+        \PY{n}{input\PYZus{}shape} \PY{o}{=} \PY{n}{X\PYZus{}train}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{:}\PY{p}{]}
+        \PY{n}{act} \PY{o}{=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{relu}\PY{l+s+s1}{\PYZsq{}}
+        \PY{n}{n\PYZus{}classes} \PY{o}{=} \PY{l+m+mi}{7}
+        
+        \PY{c+c1}{\PYZsh{} Construct model}
+        \PY{n}{model} \PY{o}{=} \PY{n}{Sequential}\PY{p}{(}\PY{p}{)}
+        \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{BatchNormalization}\PY{p}{(}\PY{n}{input\PYZus{}shape}\PY{o}{=}\PY{n}{input\PYZus{}shape}\PY{p}{)}\PY{p}{)}
+        \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{Conv2D}\PY{p}{(}\PY{l+m+mi}{32}\PY{p}{,} \PY{n}{kernel\PYZus{}size}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{3}\PY{p}{,} \PY{l+m+mi}{3}\PY{p}{)}\PY{p}{,}\PY{n}{activation}\PY{o}{=}\PY{n}{act}\PY{p}{,}\PY{n}{padding} \PY{o}{=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Same}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{input\PYZus{}shape}\PY{o}{=}\PY{n}{input\PYZus{}shape}\PY{p}{)}\PY{p}{)}
+        \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{Conv2D}\PY{p}{(}\PY{l+m+mi}{32}\PY{p}{,}\PY{n}{kernel\PYZus{}size}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{3}\PY{p}{,} \PY{l+m+mi}{3}\PY{p}{)}\PY{p}{,} \PY{n}{activation}\PY{o}{=}\PY{n}{act}\PY{p}{,}\PY{n}{padding} \PY{o}{=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Same}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{p}{)}\PY{p}{)}
+        \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{MaxPool2D}\PY{p}{(}\PY{n}{pool\PYZus{}size} \PY{o}{=} \PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+        \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{Dropout}\PY{p}{(}\PY{l+m+mf}{0.2}\PY{p}{)}\PY{p}{)}
+        
+        \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{Conv2D}\PY{p}{(}\PY{l+m+mi}{64}\PY{p}{,} \PY{p}{(}\PY{l+m+mi}{3}\PY{p}{,} \PY{l+m+mi}{3}\PY{p}{)}\PY{p}{,} \PY{n}{activation}\PY{o}{=}\PY{n}{act}\PY{p}{,}\PY{n}{padding} \PY{o}{=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Same}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{)}
+        \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{Conv2D}\PY{p}{(}\PY{l+m+mi}{64}\PY{p}{,} \PY{p}{(}\PY{l+m+mi}{3}\PY{p}{,} \PY{l+m+mi}{3}\PY{p}{)}\PY{p}{,} \PY{n}{activation}\PY{o}{=}\PY{n}{act}\PY{p}{,}\PY{n}{padding} \PY{o}{=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Same}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{)}
+        \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{MaxPool2D}\PY{p}{(}\PY{n}{pool\PYZus{}size}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+        \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{Dropout}\PY{p}{(}\PY{l+m+mf}{0.5}\PY{p}{)}\PY{p}{)}
+        
+        \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{Flatten}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+        \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{Dense}\PY{p}{(}\PY{l+m+mi}{128}\PY{p}{,} \PY{n}{activation}\PY{o}{=}\PY{n}{act}\PY{p}{)}\PY{p}{)}
+        \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{Dropout}\PY{p}{(}\PY{l+m+mf}{0.5}\PY{p}{)}\PY{p}{)}
+        \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{Dense}\PY{p}{(}\PY{n}{n\PYZus{}classes}\PY{p}{,} \PY{n}{activation}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{softmax}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{)}
+        \PY{n}{model}\PY{o}{.}\PY{n}{summary}\PY{p}{(}\PY{p}{)}
 \end{Verbatim}
 
 
@@ -673,8 +702,8 @@ rotate, zoom, shift or flip images. This allows for greater model
 generalisation to new data.
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor} }]:} \PY{c+c1}{\PYZsh{} Define the optimizer}
-        \PY{n}{optimizer} \PY{o}{=} \PY{n}{Adam}\PY{p}{(}\PY{n}{lr}\PY{o}{=}\PY{l+m+mf}{0.0001}\PY{p}{,} \PY{n}{beta\PYZus{}1}\PY{o}{=}\PY{l+m+mf}{0.9}\PY{p}{,} \PY{n}{beta\PYZus{}2}\PY{o}{=}\PY{l+m+mf}{0.999}\PY{p}{,} \PY{n}{epsilon}\PY{o}{=}\PY{k+kc}{None}\PY{p}{,} \PY{n}{decay}\PY{o}{=}\PY{l+m+mf}{0.0}\PY{p}{,} \PY{n}{amsgrad}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}7}]:} \PY{c+c1}{\PYZsh{} Define the optimizer}
+        \PY{n}{optimizer} \PY{o}{=} \PY{n}{Adam}\PY{p}{(}\PY{n}{lr}\PY{o}{=}\PY{l+m+mf}{0.0005}\PY{p}{,} \PY{n}{beta\PYZus{}1}\PY{o}{=}\PY{l+m+mf}{0.9}\PY{p}{,} \PY{n}{beta\PYZus{}2}\PY{o}{=}\PY{l+m+mf}{0.999}\PY{p}{,} \PY{n}{epsilon}\PY{o}{=}\PY{k+kc}{None}\PY{p}{,} \PY{n}{decay}\PY{o}{=}\PY{l+m+mf}{0.0}\PY{p}{,} \PY{n}{amsgrad}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
         \PY{c+c1}{\PYZsh{} or 5 e\PYZhy{}4}
         
         \PY{c+c1}{\PYZsh{} Start with no LR decay. Then optimise in subsequent models}
@@ -710,16 +739,16 @@ generalisation to new data.
 reproducibility.
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor} }]:} \PY{c+c1}{\PYZsh{} Set random seed to ensure reproducability}
-        \PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{seed}\PY{p}{(}\PY{l+m+mi}{10}\PY{p}{)}      
-        
-        \PY{c+c1}{\PYZsh{} Fit the model}
-        \PY{n}{epochs} \PY{o}{=} \PY{l+m+mi}{100} 
-        \PY{n}{batch\PYZus{}size} \PY{o}{=} \PY{l+m+mi}{9}
-        \PY{n}{history} \PY{o}{=} \PY{n}{model}\PY{o}{.}\PY{n}{fit\PYZus{}generator}\PY{p}{(}\PY{n}{datagen}\PY{o}{.}\PY{n}{flow}\PY{p}{(}\PY{n}{X\PYZus{}train}\PY{p}{,}\PY{n}{Y\PYZus{}train}\PY{p}{,} \PY{n}{batch\PYZus{}size}\PY{o}{=}\PY{n}{batch\PYZus{}size}\PY{p}{)}\PY{p}{,}
-                                      \PY{n}{epochs} \PY{o}{=} \PY{n}{epochs}\PY{p}{,} \PY{n}{validation\PYZus{}data} \PY{o}{=} \PY{p}{(}\PY{n}{X\PYZus{}val}\PY{p}{,}\PY{n}{Y\PYZus{}val}\PY{p}{)}\PY{p}{,}
-                                      \PY{n}{verbose} \PY{o}{=} \PY{l+m+mi}{1}\PY{p}{,} \PY{n}{steps\PYZus{}per\PYZus{}epoch}\PY{o}{=}\PY{n}{X\PYZus{}train}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]} \PY{o}{/}\PY{o}{/} \PY{n}{batch\PYZus{}size}
-                                      \PY{p}{,} \PY{n}{callbacks}\PY{o}{=}\PY{p}{[}\PY{n}{learning\PYZus{}rate\PYZus{}reduction}\PY{p}{]}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}12}]:} \PY{c+c1}{\PYZsh{} Set random seed to ensure reproducability}
+         \PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{seed}\PY{p}{(}\PY{l+m+mi}{10}\PY{p}{)}      
+         
+         \PY{c+c1}{\PYZsh{} Set training parameters and fit model}
+         \PY{n}{epochs} \PY{o}{=} \PY{l+m+mi}{100} 
+         \PY{n}{batch\PYZus{}size} \PY{o}{=} \PY{l+m+mi}{9}
+         \PY{n}{history} \PY{o}{=} \PY{n}{model}\PY{o}{.}\PY{n}{fit\PYZus{}generator}\PY{p}{(}\PY{n}{datagen}\PY{o}{.}\PY{n}{flow}\PY{p}{(}\PY{n}{X\PYZus{}train}\PY{p}{,}\PY{n}{Y\PYZus{}train}\PY{p}{,} \PY{n}{batch\PYZus{}size}\PY{o}{=}\PY{n}{batch\PYZus{}size}\PY{p}{)}\PY{p}{,}
+                                       \PY{n}{epochs} \PY{o}{=} \PY{n}{epochs}\PY{p}{,} \PY{n}{validation\PYZus{}data} \PY{o}{=} \PY{p}{(}\PY{n}{X\PYZus{}val}\PY{p}{,}\PY{n}{Y\PYZus{}val}\PY{p}{)}\PY{p}{,}
+                                       \PY{n}{verbose} \PY{o}{=} \PY{l+m+mi}{1}\PY{p}{,} \PY{n}{steps\PYZus{}per\PYZus{}epoch}\PY{o}{=}\PY{n}{X\PYZus{}train}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]} \PY{o}{/}\PY{o}{/} \PY{n}{batch\PYZus{}size}\PY{p}{,}
+                                       \PY{n}{callbacks}\PY{o}{=}\PY{p}{[}\PY{n}{learning\PYZus{}rate\PYZus{}reduction}\PY{p}{]}\PY{p}{)}
 \end{Verbatim}
 
 
@@ -739,7 +768,8 @@ selection of learning rate, epochs and batch sizes.
         \PY{k}{def} \PY{n+nf}{rand\PYZus{}search}\PY{p}{(}\PY{n}{X\PYZus{}train}\PY{p}{,} \PY{n}{Y\PYZus{}train}\PY{p}{,} \PY{n}{X\PYZus{}val}\PY{p}{,} \PY{n}{Y\PYZus{}val}\PY{p}{,} \PY{n}{params}\PY{p}{)}\PY{p}{:}
             \PY{n}{conv\PYZus{}dropout} \PY{o}{=} \PY{n+nb}{float}\PY{p}{(}\PY{n}{params}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{conv\PYZus{}dropout}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
             \PY{n}{dense1\PYZus{}neuron} \PY{o}{=} \PY{n+nb}{int}\PY{p}{(}\PY{n}{params}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{dense1\PYZus{}neuron}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
-            
+        
+            \PY{c+c1}{\PYZsh{} Construct model}
             \PY{n}{model} \PY{o}{=} \PY{n}{Sequential}\PY{p}{(}\PY{p}{)}
         \PY{c+c1}{\PYZsh{}    model.add(BatchNormalization(input\PYZus{}shape=X\PYZus{}train.shape[1:]))}
             \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{Conv2D}\PY{p}{(}\PY{l+m+mi}{32}\PY{p}{,} \PY{p}{(}\PY{l+m+mi}{3}\PY{p}{,} \PY{l+m+mi}{3}\PY{p}{)}\PY{p}{,} \PY{n}{padding}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{same}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{activation}\PY{o}{=}\PY{n}{params}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{activation}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}\PY{p}{)}
@@ -751,7 +781,7 @@ selection of learning rate, epochs and batch sizes.
             \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{MaxPool2D}\PY{p}{(}\PY{n}{pool\PYZus{}size} \PY{o}{=} \PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{)}\PY{p}{)}\PY{p}{)}
             \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{Dropout}\PY{p}{(}\PY{n}{conv\PYZus{}dropout}\PY{p}{)}\PY{p}{)}
         
-            \PY{c+c1}{\PYZsh{} Extra layers not used}
+            \PY{c+c1}{\PYZsh{} Extra layers used during random search}
         \PY{c+c1}{\PYZsh{}    model.add(BatchNormalization(input\PYZus{}shape=X\PYZus{}train.shape[1:]))}
         \PY{c+c1}{\PYZsh{}    model.add(Conv2D(256, (5, 5), padding=\PYZsq{}same\PYZsq{}, activation=params[\PYZsq{}activation\PYZsq{}]))}
         \PY{c+c1}{\PYZsh{}    model.add(MaxPool2D(pool\PYZus{}size = (2, 2)))}
@@ -760,7 +790,7 @@ selection of learning rate, epochs and batch sizes.
             \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{Flatten}\PY{p}{(}\PY{p}{)}\PY{p}{)}
             \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{Dense}\PY{p}{(}\PY{n}{dense1\PYZus{}neuron}\PY{p}{,} \PY{n}{activation}\PY{o}{=}\PY{n}{params}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{activation}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}\PY{p}{)}
             \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{Dropout}\PY{p}{(}\PY{l+m+mf}{0.5}\PY{p}{)}\PY{p}{)}
-            \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{Dense}\PY{p}{(}\PY{n}{num\PYZus{}classes}\PY{p}{,} \PY{n}{activation}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{softmax}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{)}
+            \PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{Dense}\PY{p}{(}\PY{n}{n\PYZus{}classes}\PY{p}{,} \PY{n}{activation}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{softmax}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{)}
             \PY{n}{model}\PY{o}{.}\PY{n}{summary}\PY{p}{(}\PY{p}{)}
             
             \PY{c+c1}{\PYZsh{} Compile model}
@@ -770,7 +800,7 @@ selection of learning rate, epochs and batch sizes.
                 \PY{n}{metrics}\PY{o}{=}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{accuracy}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
             \PY{p}{)}
             
-            \PY{c+c1}{\PYZsh{} Fit model}
+            \PY{c+c1}{\PYZsh{} Set training parameters and fit model}
             \PY{n}{out} \PY{o}{=} \PY{n}{model}\PY{o}{.}\PY{n}{fit}\PY{p}{(}
                 \PY{n}{x}\PY{p}{,} \PY{n}{y}\PY{p}{,} \PY{n}{epochs}\PY{o}{=}\PY{l+m+mi}{50}\PY{p}{,} 
                 \PY{n}{batch\PYZus{}size}\PY{o}{=}\PY{l+m+mi}{10}\PY{p}{,} 
@@ -792,39 +822,257 @@ selection of learning rate, epochs and batch sizes.
 \end{Verbatim}
 
 
+    Due to the data imbalance issue (ref. Methodology), the InceptionV3
+model from ImageNet was tested as the base for a Transfer Learning CNN.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor} }]:} \PY{c+c1}{\PYZsh{} Load InceptionV3 model from keras and associated modules}
+        \PY{k+kn}{from} \PY{n+nn}{keras}\PY{n+nn}{.}\PY{n+nn}{applications} \PY{k}{import} \PY{n}{InceptionV3}
+        \PY{k+kn}{from} \PY{n+nn}{keras}\PY{n+nn}{.}\PY{n+nn}{layers} \PY{k}{import} \PY{n}{GlobalAveragePooling2D}
+        \PY{k+kn}{from} \PY{n+nn}{keras}\PY{n+nn}{.}\PY{n+nn}{models} \PY{k}{import} \PY{n}{Model}
+        \PY{k+kn}{from} \PY{n+nn}{keras}\PY{n+nn}{.}\PY{n+nn}{applications}\PY{n+nn}{.}\PY{n+nn}{inception\PYZus{}v3} \PY{k}{import} \PY{n}{preprocess\PYZus{}input}
+        
+        \PY{c+c1}{\PYZsh{} Set InceptionV3 as the base model, exluding the fully connected top layer}
+        \PY{n}{base\PYZus{}model} \PY{o}{=} \PY{n}{InceptionV3}\PY{p}{(}\PY{n}{weights}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{imagenet}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{include\PYZus{}top}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+        \PY{c+c1}{\PYZsh{} Fix the model weights}
+        \PY{k}{for} \PY{n}{layer} \PY{o+ow}{in} \PY{n}{base\PYZus{}model}\PY{o}{.}\PY{n}{layers}\PY{p}{:}
+            \PY{n}{layer}\PY{o}{.}\PY{n}{trainable} \PY{o}{=} \PY{k+kc}{False}
+        
+        \PY{c+c1}{\PYZsh{} Set additional base model parameters}
+        \PY{n}{x} \PY{o}{=} \PY{n}{base\PYZus{}model}\PY{o}{.}\PY{n}{output}
+        \PY{n}{x} \PY{o}{=} \PY{n}{GlobalAveragePooling2D}\PY{p}{(}\PY{n}{name}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{avg\PYZus{}pool}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{(}\PY{n}{x}\PY{p}{)}
+        \PY{n}{x} \PY{o}{=} \PY{n}{Dropout}\PY{p}{(}\PY{l+m+mf}{0.4}\PY{p}{)}\PY{p}{(}\PY{n}{x}\PY{p}{)}
+        \PY{c+c1}{\PYZsh{} Set fully connected layer parameters}
+        \PY{n}{predictions} \PY{o}{=} \PY{n}{Dense}\PY{p}{(}\PY{n}{n\PYZus{}classes}\PY{p}{,} \PY{n}{activation}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{softmax}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{(}\PY{n}{x}\PY{p}{)}
+        \PY{n}{model} \PY{o}{=} \PY{n}{Model}\PY{p}{(}\PY{n}{inputs}\PY{o}{=}\PY{n}{base\PYZus{}model}\PY{o}{.}\PY{n}{input}\PY{p}{,} \PY{n}{outputs}\PY{o}{=}\PY{n}{predictions}\PY{p}{)}
+        
+        \PY{c+c1}{\PYZsh{} Compile model}
+        \PY{n}{model}\PY{o}{.}\PY{n}{compile}\PY{p}{(}\PY{n}{optimizer}\PY{o}{=}\PY{n}{optimizer}\PY{p}{,}
+                      \PY{n}{loss}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{categorical\PYZus{}crossentropy}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}
+                      \PY{n}{metrics}\PY{o}{=}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{accuracy}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+        
+        \PY{c+c1}{\PYZsh{} Set training parameters and fit model}
+        \PY{n}{epochs} \PY{o}{=} \PY{l+m+mi}{50} 
+        \PY{n}{batch\PYZus{}size} \PY{o}{=} \PY{l+m+mi}{15}
+        \PY{n}{history} \PY{o}{=} \PY{n}{model}\PY{o}{.}\PY{n}{fit\PYZus{}generator}\PY{p}{(}\PY{n}{datagen}\PY{o}{.}\PY{n}{flow}\PY{p}{(}\PY{n}{X\PYZus{}train}\PY{p}{,}\PY{n}{Y\PYZus{}train}\PY{p}{,} \PY{n}{batch\PYZus{}size}\PY{o}{=}\PY{n}{batch\PYZus{}size}\PY{p}{)}\PY{p}{,}
+                                      \PY{n}{epochs} \PY{o}{=} \PY{n}{epochs}\PY{p}{,} \PY{n}{validation\PYZus{}data} \PY{o}{=} \PY{p}{(}\PY{n}{X\PYZus{}val}\PY{p}{,}\PY{n}{Y\PYZus{}val}\PY{p}{)}\PY{p}{,}
+                                      \PY{n}{verbose} \PY{o}{=} \PY{l+m+mi}{1}\PY{p}{,} \PY{n}{steps\PYZus{}per\PYZus{}epoch}\PY{o}{=}\PY{n}{X\PYZus{}train}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]} \PY{o}{/}\PY{o}{/} \PY{n}{batch\PYZus{}size}
+                                      \PY{p}{,} \PY{n}{callbacks}\PY{o}{=}\PY{p}{[}\PY{n}{learning\PYZus{}rate\PYZus{}reduction}\PY{p}{]}\PY{p}{)}
+\end{Verbatim}
+
+
+    After finalising the model it was saved as an \emph{hdf5} file. The
+training history dictionary was parsed for the loss and accuracy data,
+converted into a dataframe and cached.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor} }]:} \PY{c+c1}{\PYZsh{} Save model}
+        \PY{n}{model}\PY{o}{.}\PY{n}{save}\PY{p}{(}\PY{n}{os}\PY{o}{.}\PY{n}{path}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n}{project\PYZus{}dir}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{tests}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{cnn.hdf5}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{)}
+        
+        \PY{c+c1}{\PYZsh{} Convert model training history dictionary to dataframe for plotting}
+        \PY{n}{hist\PYZus{}df} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{history}\PY{o}{.}\PY{n}{history}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{acc}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+        \PY{n}{hist\PYZus{}df}\PY{o}{.}\PY{n}{columns} \PY{o}{=} \PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{train\PYZus{}acc}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+        \PY{n}{hist\PYZus{}df}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{train\PYZus{}loss}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{history}\PY{o}{.}\PY{n}{history}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{loss}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+        \PY{n}{hist\PYZus{}df}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{val\PYZus{}acc}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{history}\PY{o}{.}\PY{n}{history}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{val\PYZus{}acc}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+        \PY{n}{hist\PYZus{}df}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{val\PYZus{}loss}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{history}\PY{o}{.}\PY{n}{history}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{val\PYZus{}loss}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+        \PY{n}{hist\PYZus{}df}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lr}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{history}\PY{o}{.}\PY{n}{history}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lr}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+        \PY{n}{hist\PYZus{}df}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{epoch}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{epochs}
+        
+        \PY{c+c1}{\PYZsh{} Cache history df}
+        \PY{n}{hist\PYZus{}df}\PY{o}{.}\PY{n}{to\PYZus{}pickle}\PY{p}{(}\PY{n}{os}\PY{o}{.}\PY{n}{path}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n}{project\PYZus{}dir}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{cache}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{hist\PYZus{}df\PYZus{}1822\PYZhy{}05.p}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+
+
     \hypertarget{results}{%
-\subsection{Results}\label{results}}
+\section{Results}\label{results}}
 
 Following training of the model using The results show that even this
 simple implementation of a CNN can be an effect diagnostic tool for skin
 cancer.
 
-The model
+As per Table 3, he model tested with a predictive accuracy of 78.2
+percent over the seven classes.
 
 How successful has it been? Provide evidence, using appropriate
 evaluation methodologies, and comment on the strengths/weaknesses of
 your evidence in answering this question.
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor} }]:} \PY{n}{loss}\PY{p}{,} \PY{n}{acc} \PY{o}{=} \PY{n}{model}\PY{o}{.}\PY{n}{evaluate}\PY{p}{(}\PY{n}{X\PYZus{}test}\PY{p}{,} \PY{n}{Y\PYZus{}test}\PY{p}{,} \PY{n}{verbose}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{)}
-        \PY{n}{loss\PYZus{}val}\PY{p}{,} \PY{n}{acc\PYZus{}val} \PY{o}{=} \PY{n}{model}\PY{o}{.}\PY{n}{evaluate}\PY{p}{(}\PY{n}{X\PYZus{}val}\PY{p}{,} \PY{n}{Y\PYZus{}val}\PY{p}{,} \PY{n}{verbose}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{)}
-        \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Validation: accuracy = }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{  ;  loss\PYZus{}v = }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{p}{(}\PY{n}{acc\PYZus{}val}\PY{p}{,} \PY{n}{loss\PYZus{}val}\PY{p}{)}\PY{p}{)}
-        \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Test: accuracy = }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{  ;  loss = }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{p}{(}\PY{n}{accuracy}\PY{p}{,} \PY{n}{loss}\PY{p}{)}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}8}]:} \PY{c+c1}{\PYZsh{} Load cached model}
+        \PY{k+kn}{from} \PY{n+nn}{keras}\PY{n+nn}{.}\PY{n+nn}{models} \PY{k}{import} \PY{n}{load\PYZus{}model}
+        \PY{n}{model} \PY{o}{=} \PY{n}{load\PYZus{}model}\PY{p}{(}\PY{n}{os}\PY{o}{.}\PY{n}{path}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n}{project\PYZus{}dir}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{tests}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{cnn\PYZus{}1822\PYZhy{}05\PYZus{}78.1TEST\PYZus{}82TR.hdf5}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{)}
         
-        \PY{c+c1}{\PYZsh{} Save model}
-        \PY{n}{model}\PY{o}{.}\PY{n}{save}\PY{p}{(}\PY{n}{os}\PY{o}{.}\PY{n}{path}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n}{data\PYZus{}dir}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{cnn.hdf5}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{)}
+        \PY{c+c1}{\PYZsh{} Load cached metadata df}
+        \PY{n}{hist\PYZus{}df} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{read\PYZus{}pickle}\PY{p}{(}\PY{n}{os}\PY{o}{.}\PY{n}{path}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n}{project\PYZus{}dir}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{cache}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{hist\PYZus{}df\PYZus{}1822\PYZhy{}05.p}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{)}
 \end{Verbatim}
 
 
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor} }]:} \PY{c+c1}{\PYZsh{} Construct dataframe to hold Test and Validation evaluation metrics}
+        \PY{n}{results\PYZus{}df} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Loss}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Accuracy}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+        \PY{n}{results\PYZus{}df}\PY{o}{.}\PY{n}{columns} \PY{o}{=} \PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Metric}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+        \PY{n}{results\PYZus{}df}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Test Data}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{model}\PY{o}{.}\PY{n}{evaluate}\PY{p}{(}\PY{n}{X\PYZus{}test}\PY{p}{,} \PY{n}{Y\PYZus{}test}\PY{p}{,} \PY{n}{verbose}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{)}\PY{p}{)}
+        \PY{n}{results\PYZus{}df}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Validation Data}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{model}\PY{o}{.}\PY{n}{evaluate}\PY{p}{(}\PY{n}{X\PYZus{}val}\PY{p}{,} \PY{n}{Y\PYZus{}val}\PY{p}{,} \PY{n}{verbose}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{)}\PY{p}{)}
+        \PY{c+c1}{\PYZsh{} Cache results df}
+        \PY{n}{results\PYZus{}df}\PY{o}{.}\PY{n}{to\PYZus{}pickle}\PY{p}{(}\PY{n}{os}\PY{o}{.}\PY{n}{path}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n}{project\PYZus{}dir}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{cache}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{results\PYZus{}df\PYZus{}1822\PYZhy{}05.p}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}9}]:} \PY{c+c1}{\PYZsh{} Load cached metadata df}
+        \PY{n}{results\PYZus{}df} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{read\PYZus{}pickle}\PY{p}{(}\PY{n}{os}\PY{o}{.}\PY{n}{path}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n}{project\PYZus{}dir}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{cache}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{results\PYZus{}df\PYZus{}1822\PYZhy{}05.p}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{)}
+        \PY{n}{results\PYZus{}df}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}9}]:}      Metric  Test Data  Validation Data
+        0      Loss   0.618488         0.612541
+        1  Accuracy   0.781437         0.787140
+\end{Verbatim}
+            
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}10}]:} \PY{c+c1}{\PYZsh{} Make sliced copies of hist\PYZus{}df for plotting}
+         \PY{n}{hist\PYZus{}df\PYZus{}acc} \PY{o}{=} \PY{n}{hist\PYZus{}df}\PY{o}{.}\PY{n}{drop}\PY{p}{(}\PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{train\PYZus{}loss}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{val\PYZus{}loss}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lr}\PY{l+s+s1}{\PYZsq{}}\PY{p}{\PYZcb{}}\PY{p}{,} \PY{n}{axis}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{)}
+         \PY{n}{hist\PYZus{}df\PYZus{}loss} \PY{o}{=} \PY{n}{hist\PYZus{}df}\PY{o}{.}\PY{n}{drop}\PY{p}{(}\PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{train\PYZus{}acc}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{val\PYZus{}acc}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lr}\PY{l+s+s1}{\PYZsq{}}\PY{p}{\PYZcb{}}\PY{p}{,} \PY{n}{axis}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}12}]:} \PY{k+kn}{from} \PY{n+nn}{ggplot} \PY{k}{import} \PY{o}{*}
+         
+         \PY{c+c1}{\PYZsh{} Plot Training Accuracy}
+         \PY{n}{ggplot}\PY{p}{(}\PY{n}{pd}\PY{o}{.}\PY{n}{melt}\PY{p}{(}\PY{n}{hist\PYZus{}df\PYZus{}acc}\PY{p}{,} \PY{n}{id\PYZus{}vars}\PY{o}{=}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{epoch}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}\PY{p}{,} \PY{n}{aes}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{epoch}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{value}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{variable}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{)} \PY{o}{+}\PYZbs{}
+             \PY{n}{geom\PYZus{}line}\PY{p}{(}\PY{p}{)} \PY{o}{+}\PYZbs{}
+             \PY{n}{xlab}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Epoch}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)} \PY{o}{+} \PY{n}{ylab}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Accuracy (}\PY{l+s+s2}{\PYZpc{}}\PY{l+s+s2}{)}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)} \PY{o}{+} \PY{n}{ggtitle}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Training Accuracy}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_29_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}12}]:} <ggplot: (7053593064)>
+\end{Verbatim}
+            
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}13}]:} \PY{c+c1}{\PYZsh{} Plot Training Loss}
+         \PY{n}{ggplot}\PY{p}{(}\PY{n}{pd}\PY{o}{.}\PY{n}{melt}\PY{p}{(}\PY{n}{hist\PYZus{}df\PYZus{}loss}\PY{p}{,} \PY{n}{id\PYZus{}vars}\PY{o}{=}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{epoch}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}\PY{p}{,} \PY{n}{aes}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{epoch}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{value}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{variable}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{)} \PY{o}{+}\PYZbs{}
+             \PY{n}{geom\PYZus{}line}\PY{p}{(}\PY{p}{)} \PY{o}{+}\PYZbs{}
+             \PY{n}{xlab}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Epoch}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)} \PY{o}{+} \PY{n}{ylab}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Loss (}\PY{l+s+s2}{\PYZpc{}}\PY{l+s+s2}{)}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)} \PY{o}{+} \PY{n}{ggtitle}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Training Loss}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_30_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}13}]:} <ggplot: (-9223372029801267659)>
+\end{Verbatim}
+            
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}53}]:} \PY{n}{y\PYZus{}score} \PY{o}{=} \PY{n}{model}\PY{o}{.}\PY{n}{predict}\PY{p}{(}\PY{n}{X\PYZus{}test}\PY{p}{)}
+         
+         \PY{c+c1}{\PYZsh{} Cache y\PYZus{}score}
+         \PY{n}{np}\PY{o}{.}\PY{n}{save}\PY{p}{(}\PY{n}{os}\PY{o}{.}\PY{n}{path}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n}{project\PYZus{}dir}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{cache}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{y\PYZus{}score\PYZus{}1822\PYZhy{}05.npy}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{,} \PY{n}{y\PYZus{}score}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}14}]:} \PY{c+c1}{\PYZsh{} Load cached y\PYZus{}score}
+         \PY{n}{y\PYZus{}score} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{load}\PY{p}{(}\PY{n}{os}\PY{o}{.}\PY{n}{path}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n}{project\PYZus{}dir}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{cache}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{y\PYZus{}score\PYZus{}1822\PYZhy{}05.npy}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}15}]:} \PY{c+c1}{\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{} ROC AUC Plot}
+         \PY{c+c1}{\PYZsh{} Source: https://www.dlology.com/blog/simple\PYZhy{}guide\PYZhy{}on\PYZhy{}how\PYZhy{}to\PYZhy{}generate\PYZhy{}roc\PYZhy{}plot\PYZhy{}for\PYZhy{}keras\PYZhy{}classifier/}
+         
+         \PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k}{as} \PY{n+nn}{np}
+         \PY{k+kn}{from} \PY{n+nn}{scipy} \PY{k}{import} \PY{n}{interp}
+         \PY{k+kn}{import} \PY{n+nn}{matplotlib}\PY{n+nn}{.}\PY{n+nn}{pyplot} \PY{k}{as} \PY{n+nn}{plt}
+         \PY{k+kn}{from} \PY{n+nn}{itertools} \PY{k}{import} \PY{n}{cycle}
+         \PY{k+kn}{from} \PY{n+nn}{sklearn}\PY{n+nn}{.}\PY{n+nn}{metrics} \PY{k}{import} \PY{n}{roc\PYZus{}curve}\PY{p}{,} \PY{n}{auc}
+         
+         \PY{c+c1}{\PYZsh{} Plot linewidth.}
+         \PY{n}{lw} \PY{o}{=} \PY{l+m+mi}{2}
+         
+         \PY{c+c1}{\PYZsh{} Compute ROC curve and ROC area for each class}
+         \PY{n}{fpr} \PY{o}{=} \PY{n+nb}{dict}\PY{p}{(}\PY{p}{)}
+         \PY{n}{tpr} \PY{o}{=} \PY{n+nb}{dict}\PY{p}{(}\PY{p}{)}
+         \PY{n}{roc\PYZus{}auc} \PY{o}{=} \PY{n+nb}{dict}\PY{p}{(}\PY{p}{)}
+         \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n\PYZus{}classes}\PY{p}{)}\PY{p}{:}
+             \PY{n}{fpr}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{,} \PY{n}{tpr}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{,} \PY{n}{\PYZus{}} \PY{o}{=} \PY{n}{roc\PYZus{}curve}\PY{p}{(}\PY{n}{Y\PYZus{}test}\PY{p}{[}\PY{p}{:}\PY{p}{,} \PY{n}{i}\PY{p}{]}\PY{p}{,} \PY{n}{y\PYZus{}score}\PY{p}{[}\PY{p}{:}\PY{p}{,} \PY{n}{i}\PY{p}{]}\PY{p}{)}
+             \PY{n}{roc\PYZus{}auc}\PY{p}{[}\PY{n}{i}\PY{p}{]} \PY{o}{=} \PY{n}{auc}\PY{p}{(}\PY{n}{fpr}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{,} \PY{n}{tpr}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{)}
+         
+         \PY{c+c1}{\PYZsh{} Compute micro\PYZhy{}average ROC curve and ROC area}
+         \PY{n}{fpr}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{micro}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{,} \PY{n}{tpr}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{micro}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{,} \PY{n}{\PYZus{}} \PY{o}{=} \PY{n}{roc\PYZus{}curve}\PY{p}{(}\PY{n}{Y\PYZus{}test}\PY{o}{.}\PY{n}{ravel}\PY{p}{(}\PY{p}{)}\PY{p}{,} \PY{n}{y\PYZus{}score}\PY{o}{.}\PY{n}{ravel}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+         \PY{n}{roc\PYZus{}auc}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{micro}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]} \PY{o}{=} \PY{n}{auc}\PY{p}{(}\PY{n}{fpr}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{micro}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{,} \PY{n}{tpr}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{micro}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{)}
+         
+         \PY{c+c1}{\PYZsh{} Compute macro\PYZhy{}average ROC curve and ROC area}
+         
+         \PY{c+c1}{\PYZsh{} First aggregate all false positive rates}
+         \PY{n}{all\PYZus{}fpr} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{unique}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{concatenate}\PY{p}{(}\PY{p}{[}\PY{n}{fpr}\PY{p}{[}\PY{n}{i}\PY{p}{]} \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n\PYZus{}classes}\PY{p}{)}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+         
+         \PY{c+c1}{\PYZsh{} Then interpolate all ROC curves at this points}
+         \PY{n}{mean\PYZus{}tpr} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros\PYZus{}like}\PY{p}{(}\PY{n}{all\PYZus{}fpr}\PY{p}{)}
+         \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n\PYZus{}classes}\PY{p}{)}\PY{p}{:}
+             \PY{n}{mean\PYZus{}tpr} \PY{o}{+}\PY{o}{=} \PY{n}{interp}\PY{p}{(}\PY{n}{all\PYZus{}fpr}\PY{p}{,} \PY{n}{fpr}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{,} \PY{n}{tpr}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{)}
+         
+         \PY{c+c1}{\PYZsh{} Finally average it and compute AUC}
+         \PY{n}{mean\PYZus{}tpr} \PY{o}{/}\PY{o}{=} \PY{n}{n\PYZus{}classes}
+         
+         \PY{n}{fpr}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{macro}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]} \PY{o}{=} \PY{n}{all\PYZus{}fpr}
+         \PY{n}{tpr}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{macro}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]} \PY{o}{=} \PY{n}{mean\PYZus{}tpr}
+         \PY{n}{roc\PYZus{}auc}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{macro}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]} \PY{o}{=} \PY{n}{auc}\PY{p}{(}\PY{n}{fpr}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{macro}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{,} \PY{n}{tpr}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{macro}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{)}
+         
+         \PY{c+c1}{\PYZsh{} Plot all ROC curves}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{fpr}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{micro}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{,} \PY{n}{tpr}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{micro}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{,}
+                  \PY{n}{label}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{micro\PYZhy{}average ROC curve (area = }\PY{l+s+si}{\PYZob{}0:0.2f\PYZcb{}}\PY{l+s+s1}{)}\PY{l+s+s1}{\PYZsq{}}
+                        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZsq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{roc\PYZus{}auc}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{micro}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{)}\PY{p}{,}
+                  \PY{n}{color}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{deeppink}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{linestyle}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{:}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{linewidth}\PY{o}{=}\PY{l+m+mi}{4}\PY{p}{)}
+         
+         \PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{fpr}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{macro}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{,} \PY{n}{tpr}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{macro}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{,}
+                  \PY{n}{label}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{macro\PYZhy{}average ROC curve (area = }\PY{l+s+si}{\PYZob{}0:0.2f\PYZcb{}}\PY{l+s+s1}{)}\PY{l+s+s1}{\PYZsq{}}
+                        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZsq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{roc\PYZus{}auc}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{macro}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{)}\PY{p}{,}
+                  \PY{n}{color}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{navy}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{linestyle}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{:}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{linewidth}\PY{o}{=}\PY{l+m+mi}{4}\PY{p}{)}
+         
+         \PY{n}{colors} \PY{o}{=} \PY{n}{cycle}\PY{p}{(}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{aqua}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{darkorange}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{cornflowerblue}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+         \PY{k}{for} \PY{n}{i}\PY{p}{,} \PY{n}{color} \PY{o+ow}{in} \PY{n+nb}{zip}\PY{p}{(}\PY{n+nb}{range}\PY{p}{(}\PY{n}{n\PYZus{}classes}\PY{p}{)}\PY{p}{,} \PY{n}{colors}\PY{p}{)}\PY{p}{:}
+             \PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{fpr}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{,} \PY{n}{tpr}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{n}{color}\PY{p}{,} \PY{n}{lw}\PY{o}{=}\PY{n}{lw}\PY{p}{,}
+                      \PY{n}{label}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{ROC curve of class }\PY{l+s+si}{\PYZob{}0\PYZcb{}}\PY{l+s+s1}{ (area = }\PY{l+s+si}{\PYZob{}1:0.2f\PYZcb{}}\PY{l+s+s1}{)}\PY{l+s+s1}{\PYZsq{}}
+                      \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZsq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{i}\PY{p}{,} \PY{n}{roc\PYZus{}auc}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+         
+         \PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} \PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{k\PYZhy{}\PYZhy{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{lw}\PY{o}{=}\PY{n}{lw}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{xlim}\PY{p}{(}\PY{p}{[}\PY{l+m+mf}{0.0}\PY{p}{,} \PY{l+m+mf}{1.0}\PY{p}{]}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{ylim}\PY{p}{(}\PY{p}{[}\PY{l+m+mf}{0.0}\PY{p}{,} \PY{l+m+mf}{1.05}\PY{p}{]}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{False Positive Rate}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{True Positive Rate}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{title}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Some extension of Receiver operating characteristic to multi\PYZhy{}class}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{n}{loc}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{lower right}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_33_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
     \hypertarget{discussion}{%
-\subsection{Discussion}\label{discussion}}
+\section{Discussion}\label{discussion}}
 
 What are the future implications for work in this area? If appli- cable,
 which areas of extension work are now possible due to the foundational
 work you have performed in this project?
 
     \hypertarget{conclusion}{%
-\subsection{Conclusion}\label{conclusion}}
+\section{Conclusion}\label{conclusion}}
 
 A brief reflection on your personal and professional learning in
 undertaking this project. Here you can comment on how you found the
@@ -834,7 +1082,7 @@ conclusions which will inform the way you undertake similar projects in
 the future.
 
     \hypertarget{references}{%
-\subsection{References}\label{references}}
+\section{References}\label{references}}
 
 Shen et al.~2017 @article\{doi:10.1146/annurev-bioeng-071516-044442,
 author = \{Shen, Dinggang and Wu, Guorong and Suk, Heung-Il\}, title =
